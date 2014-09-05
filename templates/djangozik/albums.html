@@ -1,0 +1,41 @@
+{% load static %}
+
+<h1>Albums</h1>
+{% if artists != None %}
+    {% for artist in artists %}
+        <div>
+            {%if artist.picture != null %}
+                <img src="{% static artist.picture %}" style="float:left; margin: 0px 24px 10px 0px;max-width: 500px;"/>
+            {% else %}
+                <img src="{% static "images/no_band.jpg" %}" style="float:left; margin: 0px 24px 10px 0px;max-width: 500px;"/>
+            {% endif %}
+            <h2>{{ artist.name }}</h2>
+            {% if artist.text != null %}
+                <p>{{ artist.text }}</p>
+            {% else %}
+                <p></p>
+            {% endif %}
+        </div>
+        <div style"clear: both;"></div>
+    {% endfor %}
+{% endif %}
+<ul class="album_list">
+    {% for artist in artists %}
+    <li>
+        <a class="async" href="{% url 'songs' 'artist' artist.slug %}">
+            <img class="album" src="{% static 'images/no_cover.gif' %}" />
+            All Albums for {{ artist }}
+        </a>
+    </li>
+    {% endfor %}
+    {% for album in albums %}
+    <li>
+        <a class="async" href="{% url 'songs' 'album' album.slug %}">
+            <img class="album_cover" 
+            data-slug="{{ album.slug }}" src="{% if album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static album.picture %}{% endif %}" 
+            data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
+            {{ album }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>

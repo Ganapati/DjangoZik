@@ -1,0 +1,33 @@
+<form role="form" method="post" action="#">
+    <div class="form-group">
+        <label for="radio_name">Add a new radio</label>
+        <input type="url" name="radio_name" class="form-control" id="radio_name" placeholder="Enter webradio url">
+    </div>
+    <button type="submit" id="add_radio" class="btn btn-default">Add</button>
+</form>
+<h1>Radios</h1>
+
+<div class="table-responsive">
+<table class="table table-striped table_radio">
+  <thead>
+    <tr>
+      <th>Radio</th>
+      <th>Supprimer</th>
+  </tr>
+  </thead>
+  <tbody>
+    {% for radio in radios  %}
+    <tr>
+        <td>
+            <a href="#" class="play_radio" class="btn_radio" data-url="{{ radio.url }}">{{ radio }}</a>
+        </td>
+        <td>
+            <a href="" class="delete_radio" data-id="{{ radio.id }}">
+                <span class="glyphicon glyphicon-minus-sign"></span>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>

@@ -1,0 +1,42 @@
+{% load static %}
+
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Song</th>
+          <th>Album</th>
+          <th>Artist</th>
+          <th>Style</th>
+          <th>Playlist</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for song in songs  %}
+        <tr>
+            <td>
+                <img class="album_cover thumb_small" 
+                     data-slug="{{ song.album.slug }}" src="{% if song.album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static song.album.picture %}{% endif %}" 
+                     data-picture="{% if song.album.picture != None %}yes{% else %}no{% endif %}" />
+            </td>
+            <td><a class="song" data-source="{% static song.filepath %}" href="">{{ song }}</a></td>
+            <td><a class="async" href="{% url "songs" "album" song.album.slug %}">{{ song.album }}</a></td>
+            <td><a class="async" href="{% url  "albums" song.artist.slug %}">{{ song.artist }}</a></td>
+            <td><a class="async" href="{% url  "artists" song.style.slug %}">{{ song.style }}</a></td>
+            <td>
+                <a href="#" class="add_to_playlist" data-slug="{{ song.slug }}">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </a>
+            {% if type != null %}
+                {% if type == "playlist" %}
+                <a href="#" class="remove_from_playlist" data-playlist="{{ playlist.slug }}" data-slug="{{ song.slug }}"><span class="glyphicon glyphicon-minus-sign"></span></a>
+                {% endif %}
+            {% endif %}
+                <a href="{% static  song.filepath %}" class="" target="_blank"><span class="glyphicon glyphicon-download-alt"></span></a>
+            </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>

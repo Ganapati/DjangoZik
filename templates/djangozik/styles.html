@@ -1,0 +1,19 @@
+<h1>Styles</h1>
+<div class="table-responsive">
+    <table class="table table-striped table_playlist">
+      <thead>
+        <tr>
+          <th>Styles</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for style in styles %}
+        <tr>
+            <td>
+                <a class="async" href="{% url 'artists' style.slug %}">{{ style }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>

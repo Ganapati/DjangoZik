@@ -1,0 +1,48 @@
+{% load static %}
+
+<h1>Search</h1>
+{% if artists|length > 0 %}
+    <h2>Artists</h2>
+    <ul class="artist_list">
+        {% for  artist in artists %}
+        <li>
+            <a class="async" href="{% url 'albums' artist.slug %}">
+                <img class="artist_picture thumb_medium" 
+                             data-slug="{{ artist.slug }}" src="{% if artist.picture == None %}{% static 'images/no_band.jpg' %}{% else %}{% static artist.picture %}{% endif %}" 
+                             data-picture="{% if artist.picture != None %}yes{% else %}no{% endif %}" />
+                {{ artist }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    <div style="clear: both;"></div>
+{% endif %}
+{% if playlists|length > 0 %}
+    <h2>Playlists</h2>
+    <ul class="playlist_list">
+        {% for playlist in playlists %}
+        <a class="async" href="{% url 'songs' 'playlists' playlist.slug %}">{{ playlist.name }}</a>
+        {% endfor %}
+    </ul>
+    <div style="clear: both;"></div>
+{% endif %}
+{% if albums|length > 0 %}
+    <h2>Albums</h2>
+    <ul class="album_list">
+        {% for album in albums %}
+            <li>
+                <a class="async" href="{% url 'songs' 'album' album.slug %}">
+                    <img class="album_cover" 
+                    data-slug="{{ album.slug }}" src="{% if album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static album.picture %}{% endif %}" 
+                    data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
+                    {{ album }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div style="clear: both;"></div>
+{% endif %}
+{% if songs|length > 0 %}
+<h2>Songs</h2>
+{% include 'djangozik/songs_part.html' %}
+{% endif %}

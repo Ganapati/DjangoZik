@@ -1,0 +1,165 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>DjangoZik {% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static "css/dashboard.css" %}" rel="stylesheet">
+    <link href="{% static "css/style.css" %}" rel="stylesheet">
+    <link href="{% static "Jplayer/skins/blue.monday/jplayer.blue.monday.css" %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      <script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
+      <script type="text/javascript" src="{% static "Jplayer/jquery.jplayer.min.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/navigation.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/alerts.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/search.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/script.js" %}"></script>
+  </head>
+
+  <body>
+    <!-- Top menu -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">DjangoZik</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url "logout" %}">Logout</a></li>
+          </ul>
+          <span class="navbar-form navbar-right">
+            <input id="search_input" type="text" class="form-control" placeholder="Search...">
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Left menu -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="btn_artists"><a href="{% url "artists" %}" class="async">Artists</a></li>
+            <li class="btn_albums"><a href="{% url "albums" %}" class="async">Albums</a></li>
+            <li class="btn_styles"><a href="{% url "styles" %}" class="async">Styles</a></li>
+            <li class="btn_playlists"><a href="{% url "playlists" %}" class="async">Playlists</a></li>
+            <li class="btn_radios"><a href="{% url "radios" %}" class="async">Radios</a></li>
+          </ul>
+        </div>
+
+        <!-- Content -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="alert alert-warning fade in">
+                <button type="button" class="close close_alert" aria-hidden="true">&times;</button>
+                <strong class="alert_title"></strong> <span class="alert_text"></span>
+            </div>
+            <div class="alert alert-success fade in">
+                <button type="button" class="close close_alert" aria-hidden="true">&times;</button>
+                <strong class="alert_title"></strong> <span class="alert_text"></span>
+            </div>
+            <div id="site_content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- Player -->
+        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+          <div id="jp_container_1" class="jp-audio">
+            <div class="jp-type-single">
+              <div class="jp-gui jp-interface">
+                <ul class="jp-controls">
+                  <li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
+                  <li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
+                  <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+                  <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+                  <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
+                </ul>
+                <div class="jp-progress">
+                  <div class="jp-seek-bar">
+                    <div class="jp-play-bar"></div>
+                  </div>
+                </div>
+                <div class="jp-volume-bar">
+                  <div class="jp-volume-bar-value"></div>
+                </div>
+                <div class="jp-time-holder">
+                  <div class="jp-current-time"></div>
+                  <div class="jp-duration"></div>
+                  <ul class="jp-toggles">
+                    <li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
+                    <li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="jp-details">
+                <ul>
+                  <li><span class="jp-title"></span></li>
+                </ul>
+              </div>
+              <div class="jp-no-solution">
+                <span>Update Required</span>
+                To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+              </div>
+            </div>
+          </div>
+        <!-- END Player -->
+
+        <!-- Modal Form -->
+        <div class="modal" id="modal_playlist">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h4 class="modal-title">Add to playlist</h4>
+                </div>
+                <div class="modal-body">
+                    <select class="form-control">
+                    {% for playlist in modal_playlists %}
+                        <option class="playlist" value="{{ playlist.slug }}">{{ playlist.name }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="modal-footer">
+                  <a href="#" data-dismiss="modal" class="btn">Close</a>
+                  <a href="#" class="btn btn-primary add_song_to_playlist">Add</a>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal_layout"></div>
+        <div class="modal_form"></div>
+        <!-- END Modal-->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/docs.min.js"%}"></script>
+  </body>
+</html>
+

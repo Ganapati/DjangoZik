@@ -1,0 +1,32 @@
+<div role="form" method="post" action="#">
+    <div class="form-group">
+        <label for="playlist_name">Create a new playlist</label>
+        <input type="text" name="playlist_name" class="form-control" id="playlist_name" placeholder="Enter playlist name">
+    </div>
+    <button type="submit" id="add_playlist" class="btn btn-default">Create</button>
+</form>
+<h1>Playlists</h1>
+<div class="table-responsive">
+    <table class="table table-striped table_playlist">
+      <thead>
+        <tr>
+          <th>Playlists</th>
+          <th>Supprimer</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for playlist in playlists  %}
+        <tr>
+            <td>
+                <a class="async" href="{% url 'songs' 'playlist' playlist.slug %}">{{ playlist }}</a></li>
+            </td>
+            <td>
+                <a href="" class="delete_playlist" data-slug="{{ playlist.slug }}">
+                    <span class="glyphicon glyphicon-minus-sign"></span>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>

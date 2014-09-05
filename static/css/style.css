@@ -1,0 +1,29 @@
+.main ul.album_list li, 
+.main ul.artist_list li {
+    display: block;
+    float: left;
+    width: 150px;
+    text-align: center;
+    height: 150px;
+    overflow: hidden;
+}
+
+.main ul.artist_list li img {
+    display: block;
+    margin: auto;
+}
+
+.main ul.album_list li img {
+    width: 80px;
+    display: block;
+    margin: auto;
+}
+
+.thumb_medium {
+    height: 80px;
+}
+
+.thumb_small {
+    width: 40px;
+    height: 40px;
+}

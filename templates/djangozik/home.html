@@ -1,0 +1,13 @@
+{% extends 'djangozik/layout.html' %}
+{% load static %}
+
+{% block content %}
+    <h1 class="page-header">Home</h1>
+    <h2 class="sub-header">Stats</h2>
+        <h3 style="margin-top: 46px">Artists: {{ nb_artists }}</h3>
+        <h3 style="margin-top: 46px">Albums : {{ nb_albums }}</h3>
+        <h3 style="margin-top: 46px">Songs: {{ nb_songs }}</h3>
+        <h3 style="margin-top: 46px">Styles : {{ nb_styles }}</h3>
+    <h2 class="sub-header">Last songs added</h2>
+    {% include 'djangozik/songs_part.html' %}
+{% endblock %}
