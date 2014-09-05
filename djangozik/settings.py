@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Ganapati', 'ganapati@kalkulators.org'),
+    ('Admin', 'admin@mywebsite.foo'),
 )
 
 MANAGERS = ADMINS
@@ -88,7 +88,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '@k0514k#lv4nc-o!3_z4ie9dy=*hn%ac9*5p(($mfn!bzj=0$5'
+SECRET_KEY = 'CHANGE_ME'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
