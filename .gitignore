@@ -52,3 +52,10 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+#project
+.ropeproject/
+db/*
+static/albums/*
+static/artists/*
+static/images/artists
+static/images/covers
