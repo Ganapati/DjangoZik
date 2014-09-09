@@ -88,7 +88,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'CHANGE_ME'
+SECRET_KEY = ''
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -111,7 +111,7 @@ ROOT_URLCONF = 'djangozik.urls'
 WSGI_APPLICATION = 'djangozik.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates/')
+    os.path.join(BASE_DIR, 'templates/'),
 )
 
 INSTALLED_APPS = (
