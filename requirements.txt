@@ -1,0 +1,4 @@
+django>=1.5.4
+mutagen
+requests
+beautifulsoup4
