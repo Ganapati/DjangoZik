@@ -34,10 +34,14 @@ class Command(BaseCommand):
             except:
                 pass
 
-            self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'],
-                                                      tags['title'],
-                                                      tags['album'],
-                                                      tags['genre']))
+            self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'].decode('utf-8',
+                                                                            'ignore'),
+                                                      tags['title'].decode('utf-8',
+                                                                           'ignore'),
+                                                      tags['album'].decode('utf-8',
+                                                                           'ignore'),
+                                                      tags['genre'].decode('utf-8',
+                                                                           'ignore')))
 
             artist = self.create_artist(tags['artist'],
                                         None)
