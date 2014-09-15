@@ -69,7 +69,7 @@ MEDIA_URL = ''
 STATIC_URL = '/static/'
 
 # Music full path
-MUSIC_PATH = '/media/storage/musique/'
+MUSIC_PATH = ''
 
 # Static files path
 STATIC_PATH = os.path.join(BASE_DIR, "static")
@@ -126,6 +126,8 @@ INSTALLED_APPS = (
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

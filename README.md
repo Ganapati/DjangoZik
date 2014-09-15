@@ -14,5 +14,4 @@ How to start :
 TODO :
 ------
 
-1. Add Unit tests (dev in progress)
-2. Change UI
+1. Change UI
