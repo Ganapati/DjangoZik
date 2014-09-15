@@ -19,55 +19,71 @@ class Command(BaseCommand):
             for filename in fnmatch.filter(files, "*.mp3"):
                 songs.append(os.path.join(root, filename))
 
-        self.stdout.write("Parsing songs")
-        for song in songs:
-            tags = self.get_tags(song)
+                song = os.path.join(root, filename)
 
-            try:
-                artist = Artist.objects.filter(name=tags['artist'])
-                album = Album.objects.filter(name=tags['album'])
-                new_song = Song.objects.filter(title=tags['title'],
-                                               artist=artist,
-                                               album=album)
-                if new_song.count() > 0:
+                # If song exists, skip to the next
+                song_path = song.replace(settings.MUSIC_PATH, '')
+                nb_song = Song.objects.filter(filepath=song_path).count()
+                if (nb_song > 0):
+                    self.stdout.write("- %s already exists" % song_path.decode('utf-8',
+                                                                               'ignore'))
                     continue
-            except:
-                pass
 
-            self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'].decode('utf-8',
-                                                                            'ignore'),
-                                                      tags['title'].decode('utf-8',
-                                                                           'ignore'),
-                                                      tags['album'].decode('utf-8',
-                                                                           'ignore'),
-                                                      tags['genre'].decode('utf-8',
-                                                                           'ignore')))
+                tags = self.get_tags(song)
 
-            artist = self.create_artist(tags['artist'],
-                                        None)
+                # Check if a similar song exists
+                try:
+                    artist = Artist.objects.filter(name=tags['artist'])
+                    album = Album.objects.filter(name=tags['album'])
+                    new_song = Song.objects.filter(title=tags['title'],
+                                                artist=artist,
+                                                album=album)
+                    if new_song.count() > 0:
+                        continue
+                except:
+                    pass
 
-            style = self.create_style(tags['genre'])
+                # Visual output
+                self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'].decode('utf-8',
+                                                                                'ignore'),
+                                                          tags['title'].decode('utf-8',
+                                                                              'ignore'),
+                                                          tags['album'].decode('utf-8',
+                                                                              'ignore'),
+                                                          tags['genre'].decode('utf-8',
+                                                                              'ignore')))
 
-            album = self.create_album(tags['album'],
-                                      tags['date'],
-                                      None)
+                # Create artist if not exists
+                artist = self.create_artist(tags['artist'],
+                                            None)
 
-            songpath = song.replace(settings.MUSIC_PATH, '')
+                # Create style if not exists
+                style = self.create_style(tags['genre'])
 
-            self.create_song(tags['title'],
-                             artist,
-                             style,
-                             album,
-                             songpath)
+                # Create album if not exists
+                album = self.create_album(tags['album'],
+                                          tags['date'],
+                                          None)
+
+                songpath = song.replace(settings.MUSIC_PATH, '')
+
+                self.create_song(tags['title'],
+                                 artist,
+                                 style,
+                                 album,
+                                 songpath)
 
         self.stdout.write("Scan finished")
 
     def clean_songs(self):
         songs = Song.objects.all()
         for song in songs:
-            song_path = os.path.join(settings.MUSIC_PATH, song.filepath)
+            relative_path = song.filepath
+            if (relative_path[0] == "/"):
+                relative_path = relative_path[1:]
+            song_path = os.path.join(settings.MUSIC_PATH, relative_path)
             if not os.path.isfile(song_path):
-                self.stdout.write("- %s" % song)
+                self.stdout.write("- %s" % song_path)
                 song.delete()
 
     def create_artist(self, artist, picture):

@@ -10,6 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.stdout.write('Import picture and bio for artists')
+        # Artists without pictures are considered as "new"
         artists = Artist.objects.filter(picture=None)
         metadata_grabber = MetadataGrabber()
         for artist in artists:

@@ -10,11 +10,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.stdout.write('Import covers for albums')
+        # Albums with no cover are considered as "new"
         albums = Album.objects.filter(picture=None)
         metadata_grabber = MetadataGrabber()
         for album in albums:
             image = metadata_grabber.get_and_save_cover("%s" % album.name,
-                                                        "%s/%s" % (settings.STATIC_PATH, 'images/covers/'),
+                                                        "%s/%s" % (settings.STATIC_PATH,
+                                                                   'images/covers/'),
                                                         "%s.jpg" % album.slug)
             if image is not None:
                 path = "%s%s.jpg" % ("images/covers/", album.slug)
