@@ -3,6 +3,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from djangozik.models import Song, Artist, Album, Style
+from libs.metadataGrabber import MetadataGrabber
 import os
 import fnmatch
 import mutagen
@@ -12,7 +13,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.stdout.write("Cleaning old songs")
-        self.clean_songs()
         self.stdout.write("Scanning : %s" % settings.MUSIC_PATH)
         songs = []
         for root, dirs, files in os.walk(settings.MUSIC_PATH):
@@ -36,8 +36,8 @@ class Command(BaseCommand):
                     artist = Artist.objects.filter(name=tags['artist'])
                     album = Album.objects.filter(name=tags['album'])
                     new_song = Song.objects.filter(title=tags['title'],
-                                                artist=artist,
-                                                album=album)
+                                                  artist=artist,
+                                                  album=album)
                     if new_song.count() > 0:
                         continue
                 except:
@@ -47,11 +47,11 @@ class Command(BaseCommand):
                 self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'].decode('utf-8',
                                                                                 'ignore'),
                                                           tags['title'].decode('utf-8',
-                                                                              'ignore'),
+                                                                               'ignore'),
                                                           tags['album'].decode('utf-8',
-                                                                              'ignore'),
+                                                                               'ignore'),
                                                           tags['genre'].decode('utf-8',
-                                                                              'ignore')))
+                                                                               'ignore')))
 
                 # Create artist if not exists
                 artist = self.create_artist(tags['artist'],
@@ -76,18 +76,17 @@ class Command(BaseCommand):
                                  album,
                                  songpath)
 
-        self.stdout.write("Scan finished")
+        self.stdout.write("Song scan finished")
 
-    def clean_songs(self):
-        songs = Song.objects.all()
-        for song in songs:
-            relative_path = song.filepath
-            if (relative_path[0] == "/"):
-                relative_path = relative_path[1:]
-            song_path = os.path.join(settings.MUSIC_PATH, relative_path)
-            if not os.path.isfile(song_path):
-                self.stdout.write("- %s" % song_path)
-                song.delete()
+        # Import artists
+        self.stdout.write("Import artists")
+        ImportArtists.import_artists()
+
+        # Import covers
+        self.stdout.write("Import covers")
+        ImportCovers.import_covers()
+
+        self.stdout.write("Scan finished")
 
     def create_artist(self, artist, picture):
         artist, created = Artist.objects.get_or_create(name=artist,
@@ -147,3 +146,51 @@ class Command(BaseCommand):
                 'album': album,
                 'genre': genre,
                 'artist': artist}
+
+
+class ImportArtists():
+
+    @staticmethod
+    def import_artists():
+        # Artists without pictures are considered as "new"
+        artists = Artist.objects.filter(picture=None)
+        metadata_grabber = MetadataGrabber()
+        for artist in artists:
+            try:
+                infos = metadata_grabber.get_and_save_artist(artist.name,
+                                                             "%s/%s" % (settings.STATIC_PATH, 'images/artists/'),
+                                                             "%s.jpg" % artist.slug)
+                if infos is not None:
+                    if 'infos' in infos.keys() and 'text' in infos['infos'].keys() and infos['infos']['text'] is not None:
+                        artist.text = infos['infos']['text']
+                    else:
+                        artist.text = ""
+                    if artist.slug is not None:
+                        artist.picture = 'images/artists/%s.jpg' % artist.slug
+                    else:
+                        artist.picture = 'images/no_band.jpg'
+                    artist.save()
+            except:
+                artist.picture = 'images/no_band.jpg'
+                artist.text = ""
+                artist.save()
+
+
+class ImportCovers():
+
+    @staticmethod
+    def import_covers():
+        # Albums with no cover are considered as "new"
+        albums = Album.objects.filter(picture=None)
+        metadata_grabber = MetadataGrabber()
+        for album in albums:
+            image = metadata_grabber.get_and_save_cover("%s" % album.name,
+                                                        "%s/%s" % (settings.STATIC_PATH,
+                                                                   'images/covers/'),
+                                                        "%s.jpg" % album.slug)
+            if image is not None:
+                path = "%s%s.jpg" % ("images/covers/", album.slug)
+            else:
+                path = "images/no_cover.gif"
+            album.picture = path
+            album.save()
