@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import NoArgsCommand
 from django.conf import settings
 from djangozik.models import Song, Artist, Album, Style
 from libs.metadataGrabber import MetadataGrabber
@@ -9,14 +9,18 @@ import fnmatch
 import mutagen
 
 
-class Command(BaseCommand):
+class Command(NoArgsCommand):
+    help = "Scan music folder and add new songs."
 
-    def handle(self, *args, **kwargs):
+    def handle_noargs(self, **options):
         self.stdout.write("Cleaning old songs")
         self.stdout.write("Scanning : %s" % settings.MUSIC_PATH)
         songs = []
         for root, dirs, files in os.walk(settings.MUSIC_PATH):
-            for filename in fnmatch.filter(files, "*.mp3"):
+            for filename in files:
+                if not filename.endswith(('.mp3', '.ogg', '.flac')):
+                    continue
+
                 songs.append(os.path.join(root, filename))
 
                 song = os.path.join(root, filename)
@@ -32,16 +36,16 @@ class Command(BaseCommand):
                 tags = self.get_tags(song)
 
                 # Check if a similar song exists
-                try:
-                    artist = Artist.objects.filter(name=tags['artist'])
-                    album = Album.objects.filter(name=tags['album'])
-                    new_song = Song.objects.filter(title=tags['title'],
-                                                  artist=artist,
-                                                  album=album)
-                    if new_song.count() > 0:
-                        continue
-                except:
-                    pass
+                #try:
+                artist = Artist.objects.filter(name=tags['artist'])
+                album = Album.objects.filter(name=tags['album'])
+                new_song = Song.objects.filter(title=tags['title'],
+                                                artist=artist,
+                                                album=album)
+                if new_song.count() > 0:
+                    continue
+                #except:
+                #    pass
 
                 # Visual output
                 self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'].decode('utf-8',

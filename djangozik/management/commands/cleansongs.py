@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import NoArgsCommand
 from djangozik.models import Song
 from django.conf import settings
 import os
 
 
-class Command(BaseCommand):
+class Command(NoArgsCommand):
+    help = "Remove deleted songs from database."
 
-    def handle(self, *args, **kwargs):
+    def handle_noargs(self, **options):
             songs = Song.objects.all()
             for song in songs:
                 relative_path = song.filepath
