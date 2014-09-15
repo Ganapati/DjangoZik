@@ -16,4 +16,3 @@ TODO :
 
 1. Add Unit tests (dev in progress)
 2. Change UI
-3. Add support for flac (Change JS player)
