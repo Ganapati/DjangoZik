@@ -67,6 +67,9 @@ class Command(BaseCommand):
 
                 songpath = song.replace(settings.MUSIC_PATH, '')
 
+                if (songpath[0] == "/"):
+                    songpath = songpath[1:]
+
                 self.create_song(tags['title'],
                                  artist,
                                  style,
@@ -120,7 +123,7 @@ class Command(BaseCommand):
     def get_tags(self, song):
         music = mutagen.File(song.decode('utf-8'), easy=True)
 
-        title = "Unknown"
+        title = song.decode('utf-8')
         date = "0000-00-00"
         album = "Unknown"
         genre = "Unknown"
