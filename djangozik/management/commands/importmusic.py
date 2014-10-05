@@ -26,10 +26,11 @@ class Command(NoArgsCommand):
                 song = os.path.join(root, filename)
 
                 # If song exists, skip to the next
-                song_path = smart_text(song.replace(settings.MUSIC_PATH, ''))
+                song_path = song.replace(settings.MUSIC_PATH, '')
                 nb_song = Song.objects.filter(filepath=song_path).count()
                 if (nb_song > 0):
-                    self.stdout.write("- %s already exists" % song_path)
+                    self.stdout.write("skip %s " % song_path.decode('utf-8',
+                                                                    'ignore'))
                     continue
 
                 tags = self.get_tags(song)
