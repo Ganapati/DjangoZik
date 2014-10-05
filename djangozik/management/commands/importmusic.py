@@ -25,11 +25,12 @@ class Command(NoArgsCommand):
                 song = os.path.join(root, filename)
 
                 # If song exists, skip to the next
-                song_path = song.replace(settings.MUSIC_PATH, '')
+                song_path = song.replace(settings.MUSIC_PATH,
+                                         '').decode('utf-8',
+                                                    'ignore')
                 nb_song = Song.objects.filter(filepath=song_path).count()
                 if (nb_song > 0):
-                    self.stdout.write("- %s already exists" % song_path.decode('utf-8',
-                                                                               'ignore'))
+                    self.stdout.write("- %s already exists" % song_path)
                     continue
 
                 tags = self.get_tags(song)
@@ -47,14 +48,15 @@ class Command(NoArgsCommand):
                     pass
 
                 # Visual output
-                self.stdout.write("+ %s : %s (%s, %s)" % (tags['artist'].decode('utf-8',
-                                                                                'ignore'),
-                                                          tags['title'].decode('utf-8',
-                                                                               'ignore'),
-                                                          tags['album'].decode('utf-8',
-                                                                               'ignore'),
-                                                          tags['genre'].decode('utf-8',
-                                                                               'ignore')))
+                frmt_str = "+ %s : %s (%s, %s)"
+                self.stdout.write(frmt_str % (tags['artist'].decode('utf-8',
+                                                                    'ignore'),
+                                              tags['title'].decode('utf-8',
+                                                                   'ignore'),
+                                              tags['album'].decode('utf-8',
+                                                                   'ignore'),
+                                              tags['genre'].decode('utf-8',
+                                                                   'ignore')))
 
                 # Create artist if not exists
                 artist = self.create_artist(tags['artist'],
@@ -68,7 +70,9 @@ class Command(NoArgsCommand):
                                           tags['date'],
                                           None)
 
-                songpath = song.replace(settings.MUSIC_PATH, '')
+                songpath = song.replace(settings.MUSIC_PATH,
+                                        '').decode('utf-8',
+                                                   'ignore')
 
                 if (songpath[0] == "/"):
                     songpath = songpath[1:]
@@ -161,7 +165,8 @@ class ImportArtists():
         for artist in artists:
             try:
                 infos = metadata_grabber.get_and_save_artist(artist.name,
-                                                             "%s/%s" % (settings.STATIC_PATH, 'images/artists/'),
+                                                             "%s/%s" % (settings.STATIC_PATH,
+                                                                        'images/artists/'),
                                                              "%s.jpg" % artist.slug)
                 if infos is not None:
                     if 'infos' in infos.keys() and 'text' in infos['infos'].keys() and infos['infos']['text'] is not None:
