@@ -127,9 +127,9 @@ class Command(NoArgsCommand):
         return song
 
     def get_tags(self, song):
-        music = mutagen.File(song.decode('utf-8'), easy=True)
+        music = mutagen.File(song.decode('utf-8', 'ignore'), easy=True)
 
-        title = song.decode('utf-8')
+        title = song.decode('utf-8', 'ignore')
         date = "0000-00-00"
         album = "Unknown"
         genre = "Unknown"
