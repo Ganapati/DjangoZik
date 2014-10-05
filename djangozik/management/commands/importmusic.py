@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.management.base import NoArgsCommand
+from django.utils.encoding import smart_text
 from django.conf import settings
 from djangozik.models import Song, Artist, Album, Style
 from libs.metadataGrabber import MetadataGrabber
@@ -25,9 +26,7 @@ class Command(NoArgsCommand):
                 song = os.path.join(root, filename)
 
                 # If song exists, skip to the next
-                song_path = song.replace(settings.MUSIC_PATH,
-                                         '').decode('utf-8',
-                                                    'ignore')
+                song_path = smart_text(song.replace(settings.MUSIC_PATH, ''))
                 nb_song = Song.objects.filter(filepath=song_path).count()
                 if (nb_song > 0):
                     self.stdout.write("- %s already exists" % song_path)
@@ -70,9 +69,7 @@ class Command(NoArgsCommand):
                                           tags['date'],
                                           None)
 
-                songpath = song.replace(settings.MUSIC_PATH,
-                                        '').decode('utf-8',
-                                                   'ignore')
+                songpath = smart_text(song.replace(settings.MUSIC_PATH, ''))
 
                 if (songpath[0] == "/"):
                     songpath = songpath[1:]
@@ -127,7 +124,7 @@ class Command(NoArgsCommand):
         return song
 
     def get_tags(self, song):
-        music = mutagen.File(song.decode('utf-8', 'ignore'), easy=True)
+        music = mutagen.File(smart_text(song), easy=True)
 
         title = song.decode('utf-8', 'ignore')
         date = "0000-00-00"
