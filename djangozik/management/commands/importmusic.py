@@ -5,6 +5,7 @@ from django.utils.encoding import smart_text
 from django.conf import settings
 from djangozik.models import Song, Artist, Album, Style
 from libs.metadataGrabber import MetadataGrabber
+import re
 import os
 import mutagen
 
@@ -128,7 +129,7 @@ class Command(NoArgsCommand):
         music = mutagen.File(smart_text(song), easy=True)
 
         title = song.decode('utf-8', 'ignore')
-        date = "0000-00-00"
+        date = "0001-01-01"
         album = "Unknown"
         genre = "Unknown"
         artist = "Unknown"
@@ -137,7 +138,8 @@ class Command(NoArgsCommand):
             title = music['title'][0].encode('utf-8').strip().capitalize()
         if "date" in music.keys():
             date = "%s-01-01" % music['date'][0].encode('utf-8').strip()
-            if date == "0000-01-01":
+            regex = re.compile("^([0-9]{4}-[0-9]{2}-[0-9]{2})$")
+            if not regex.match(date) or date == "0000-01-01":
                 date = None
         if "album" in music.keys():
             album = music['album'][0].encode('utf-8').strip().capitalize()
