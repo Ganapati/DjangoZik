@@ -126,27 +126,30 @@ class Command(NoArgsCommand):
         return song
 
     def get_tags(self, song):
-        music = mutagen.File(smart_text(song), easy=True)
-
         title = song.decode('utf-8', 'ignore')
         date = "0001-01-01"
         album = "Unknown"
         genre = "Unknown"
         artist = "Unknown"
 
-        if "title" in music.keys():
-            title = music['title'][0].encode('utf-8').strip().capitalize()
-        if "date" in music.keys():
-            date = "%s-01-01" % music['date'][0].encode('utf-8').strip()
-            regex = re.compile("^([0-9]{4}-[0-9]{2}-[0-9]{2})$")
-            if not regex.match(date) or date == "0000-01-01":
-                date = None
-        if "album" in music.keys():
-            album = music['album'][0].encode('utf-8').strip().capitalize()
-        if "genre" in music.keys():
-            genre = music['genre'][0].encode('utf-8').strip().capitalize()
-        if "artist" in music.keys():
-            artist = music['artist'][0].encode('utf-8').strip().capitalize()
+        try:
+            music = mutagen.File(smart_text(song), easy=True)
+            if "title" in music.keys():
+                title = music['title'][0].encode('utf-8').strip().capitalize()
+            if "date" in music.keys():
+                date = "%s-01-01" % music['date'][0].encode('utf-8').strip()
+                regex = re.compile("^([0-9]{4}-[0-9]{2}-[0-9]{2})$")
+                if not regex.match(date) or date == "0000-01-01":
+                    date = None
+            if "album" in music.keys():
+                album = music['album'][0].encode('utf-8').strip().capitalize()
+            if "genre" in music.keys():
+                genre = music['genre'][0].encode('utf-8').strip().capitalize()
+            if "artist" in music.keys():
+                artist = music['artist'][0].encode('utf-8').strip().capitalize()
+        except:
+            # Use default values
+            pass
 
         return {'title': title,
                 'date': date,
