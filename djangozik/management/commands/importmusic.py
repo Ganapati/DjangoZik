@@ -19,7 +19,7 @@ class Command(NoArgsCommand):
         songs = []
         for root, dirs, files in os.walk(settings.MUSIC_PATH):
             for filename in files:
-                if not filename.endswith(('.mp3', '.ogg')):
+                if not filename.endswith(('.mp3', '.ogg')) or filename.startswith('.'):
                     continue
 
                 songs.append(os.path.join(root, filename))
