@@ -51,13 +51,13 @@ class Command(NoArgsCommand):
                 # Visual output
                 frmt_str = "+ %s : %s (%s, %s)"
                 self.stdout.write(frmt_str % (tags['artist'].decode('utf-8',
-                                                                    'ignore'),
+                                                                    'replace'),
                                               tags['title'].decode('utf-8',
-                                                                   'ignore'),
+                                                                   'replace'),
                                               tags['album'].decode('utf-8',
-                                                                   'ignore'),
+                                                                   'replace'),
                                               tags['genre'].decode('utf-8',
-                                                                   'ignore')))
+                                                                   'replace')))
 
                 # Create artist if not exists
                 artist = self.create_artist(tags['artist'],
