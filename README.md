@@ -1,7 +1,7 @@
 DjangoZik
 =========
 
-web music player (mp3, ogg)
+web music player (mp3, ogg, m4a)
 
 How to start :
 --------------
