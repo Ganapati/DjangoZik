@@ -21,7 +21,8 @@ class CoverGrabber:
     def grab(self, keyword):
         try:
             soup = self.request_service(keyword)
-            image = soup.find_all("img", {"class": "productImage"})[0].get('src')
+            image = soup.find_all("img",
+                                  {"class": "s-access-image"})[0].get('src')
             return image
         except:
             return None
