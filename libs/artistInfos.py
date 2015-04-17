@@ -25,8 +25,8 @@ class ArtistInfos:
                 json_infos = json.loads(infos.text)
                 if json_infos['pagination']['items'] != 0:
                     data['success'] = True
-                    data['infos'] = {'image': json_infos['results']['thumb'].encode('utf-8'),
-                                    'text': json_infos['results']['title'].encode('utf-8')}
+                    data['infos'] = {'image': json_infos['results'][0]['thumb'],
+                                    'text': json_infos['results'][0]['title']}
             except:
                 # return data the next line
                 pass
