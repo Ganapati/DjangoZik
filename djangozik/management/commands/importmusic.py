@@ -1,25 +1,36 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.utils.encoding import smart_text
 from django.conf import settings
 from djangozik.models import Song, Artist, Album, Style
 from libs.metadataGrabber import MetadataGrabber
+from optparse import make_option
 import re
 import os
 import mutagen
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Scan music folder and add new songs."
+    option_list = BaseCommand.option_list + (
+        make_option('--verbose',
+                    action='store_true',
+                    dest='verbose',
+                    default=False,
+                    help='Verbose mode'),
+    )
 
-    def handle_noargs(self, **options):
-        self.stdout.write("Cleaning old songs")
-        self.stdout.write("Scanning : %s" % settings.MUSIC_PATH)
+    def handle(self, *args, **options):
+
+        if options['verbose']:
+            self.stdout.write("Cleaning old songs")
+            self.stdout.write("Scanning : %s" % settings.MEDIA_ROOT)
         songs = []
-        for root, dirs, files in os.walk(settings.MUSIC_PATH):
+        for root, dirs, files in os.walk(settings.MEDIA_ROOT):
             for filename in files:
-                if not filename.endswith(('.mp3', '.ogg', '.m4a')) or filename.startswith('.'):
+                if not filename.endswith(
+                    ('.mp3', '.ogg', '.m4a')) or filename.startswith('.'):
                     continue
 
                 songs.append(os.path.join(root, filename))
@@ -27,11 +38,12 @@ class Command(NoArgsCommand):
                 song = os.path.join(root, filename)
 
                 # If song exists, skip to the next
-                song_path = song.replace(settings.MUSIC_PATH, '')
+                song_path = song.replace(settings.MEDIA_ROOT, '')
                 nb_song = Song.objects.filter(filepath=song_path).count()
                 if (nb_song > 0):
-                    self.stdout.write("skip %s " % song_path.decode('utf-8',
-                                                                    'ignore'))
+                    if options['verbose']:
+                        self.stdout.write("skip %s " %
+                                          song_path.decode('utf-8', 'ignore'))
                     continue
 
                 tags = self.get_tags(song)
@@ -49,50 +61,45 @@ class Command(NoArgsCommand):
                     pass
 
                 # Visual output
-                frmt_str = "+ %s : %s (%s, %s)"
-                self.stdout.write(frmt_str % (tags['artist'].decode('utf-8',
-                                                                    'replace'),
-                                              tags['title'].decode('utf-8',
-                                                                   'replace'),
-                                              tags['album'].decode('utf-8',
-                                                                   'replace'),
-                                              tags['genre'].decode('utf-8',
-                                                                   'replace')))
+                if options['verbose']:
+                    frmt_str = "+ %s : %s (%s, %s)"
+                    self.stdout.write(
+                        frmt_str % (tags['artist'].decode('utf-8', 'replace'),
+                                    tags['title'].decode('utf-8', 'replace'),
+                                    tags['album'].decode('utf-8', 'replace'),
+                                    tags['genre'].decode('utf-8', 'replace')))
 
                 # Create artist if not exists
-                artist = self.create_artist(tags['artist'],
-                                            None)
+                artist = self.create_artist(tags['artist'], None)
 
                 # Create style if not exists
                 style = self.create_style(tags['genre'])
 
                 # Create album if not exists
-                album = self.create_album(tags['album'],
-                                          tags['date'],
-                                          None)
+                album = self.create_album(tags['album'], tags['date'], None)
 
-                songpath = smart_text(song.replace(settings.MUSIC_PATH, ''))
+                songpath = smart_text(song.replace(settings.MEDIA_ROOT, ''))
 
                 if (songpath[0] == "/"):
                     songpath = songpath[1:]
 
-                self.create_song(tags['title'],
-                                 artist,
-                                 style,
-                                 album,
-                                 songpath)
+                self.create_song(tags['title'], artist, style, album, songpath)
 
-        self.stdout.write("Song scan finished")
+        if options['verbose']:
+            self.stdout.write("Song scan finished")
 
         # Import artists
-        self.stdout.write("Import artists")
+        if options['verbose']:
+            self.stdout.write("Import artists")
         ImportArtists.import_artists()
 
         # Import covers
-        self.stdout.write("Import covers")
+        if options['verbose']:
+            self.stdout.write("Import covers")
         ImportCovers.import_covers()
 
-        self.stdout.write("Scan finished")
+        if options['verbose']:
+            self.stdout.write("Scan finished")
 
     def create_artist(self, artist, picture):
         artist, created = Artist.objects.get_or_create(name=artist,
@@ -151,15 +158,16 @@ class Command(NoArgsCommand):
             # Use default values
             pass
 
-        return {'title': title,
-                'date': date,
-                'album': album,
-                'genre': genre,
-                'artist': artist}
+        return {
+            'title': title,
+            'date': date,
+            'album': album,
+            'genre': genre,
+            'artist': artist
+        }
 
 
 class ImportArtists():
-
     @staticmethod
     def import_artists():
         # Artists without pictures are considered as "new"
@@ -167,12 +175,13 @@ class ImportArtists():
         metadata_grabber = MetadataGrabber()
         for artist in artists:
             try:
-                infos = metadata_grabber.get_and_save_artist(artist.name,
-                                                             "%s/%s" % (settings.STATIC_PATH,
-                                                                        'images/artists/'),
-                                                             "%s.jpg" % artist.slug)
+                infos = metadata_grabber.get_and_save_artist(
+                    artist.name, "%s/%s" % (settings.STATIC_PATH,
+                                            'images/artists/'),
+                    "%s.jpg" % artist.slug)
                 if infos is not None:
-                    if 'infos' in infos.keys() and 'text' in infos['infos'].keys() and infos['infos']['text'] is not None:
+                    if 'infos' in infos.keys() and 'text' in infos['infos'].keys(
+                    ) and infos['infos']['text'] is not None:
                         artist.text = infos['infos']['text']
                     else:
                         artist.text = ""
@@ -188,17 +197,16 @@ class ImportArtists():
 
 
 class ImportCovers():
-
     @staticmethod
     def import_covers():
         # Albums with no cover are considered as "new"
         albums = Album.objects.filter(picture=None)
         metadata_grabber = MetadataGrabber()
         for album in albums:
-            image = metadata_grabber.get_and_save_cover("%s" % album.name,
-                                                        "%s/%s" % (settings.STATIC_PATH,
-                                                                   'images/covers/'),
-                                                        "%s.jpg" % album.slug)
+            image = metadata_grabber.get_and_save_cover(
+                "%s" % album.name, "%s/%s" % (settings.STATIC_PATH,
+                                              'images/covers/'),
+                "%s.jpg" % album.slug)
             if image is not None:
                 path = "%s%s.jpg" % ("images/covers/", album.slug)
             else:

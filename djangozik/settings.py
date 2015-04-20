@@ -23,8 +23,8 @@ DATABASES = {
 }
 
 # Discogs configuration
-DISCOGS_KEY = ''
-DISCOGS_SECRET = ''
+DISCOGS_KEY = 'ZIWAadtWIJbGbSJEjlOg'
+DISCOGS_SECRET = 'vRpJyByDQJZoznvYUxVjFiTfXATyRAJN'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

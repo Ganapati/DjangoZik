@@ -17,7 +17,6 @@ class ArtistInfos:
         data = {'success': False,
                 'infos': None}
         headers = {'User-Agent': 'DjangoZik - opensource web player - dev'}
-        print self.url % (artist, settings.DISCOGS_KEY, settings.DISCOGS_SECRET)
         infos = requests.get(self.url % (artist, settings.DISCOGS_KEY, settings.DISCOGS_SECRET),
                              headers=headers)
         if infos.status_code == 200:
