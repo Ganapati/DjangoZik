@@ -7,25 +7,40 @@ from django.conf import settings
 
 class ArtistInfos:
 
-    def __init__(self, url=None):
+    def __init__(self, url=None, url_info=None):
         if url is None:
-            self.url = "https://api.discogs.com/database/search?type=artist&q=%s&key=%s&secret=%s"
+            self.url = "https://api.discogs.com/database/search"
+            self.url_info = "https://api.discogs.com/artists/%d"
         else:
             self.url = url
+            self.url_info = url_info
 
     def get(self, artist):
         data = {'success': False,
                 'infos': None}
+        params = {'type': 'artist',
+                  'q': artist,
+                  'page': 1,
+                  'per_page': 1,
+                  'key': settings.DISCOGS_KEY,
+                  'secret': settings.DISCOGS_SECRET}
         headers = {'User-Agent': 'DjangoZik - opensource web player - dev'}
-        infos = requests.get(self.url % (artist, settings.DISCOGS_KEY, settings.DISCOGS_SECRET),
+        infos = requests.get(self.url,
+                             params=params,
                              headers=headers)
         if infos.status_code == 200:
             try:
+                data['success'] = True
                 json_infos = json.loads(infos.text)
-                if json_infos['pagination']['items'] != 0:
-                    data['success'] = True
-                    data['infos'] = {'image': json_infos['results'][0]['thumb'],
-                                    'text': json_infos['results'][0]['title']}
+                params = {'key': settings.DISCOGS_KEY,
+                          'secret': settings.DISCOGS_SECRET}
+
+                details = requests.get(self.url_info % json_infos['results'][0]['id'],
+                                       params=params,
+                                       headers=headers)
+                json_details = json.loads(details.text)
+                data['infos'] = {'image': json_infos['results'][0]['thumb'],
+                                'text': json_details['profile']}
             except:
                 # return data the next line
                 pass
@@ -35,7 +50,7 @@ class ArtistInfos:
 if __name__ == "__main__":
     print "Get artist infos"
     artist_infos = ArtistInfos()
-    infos = artist_infos.get("les muscles")
+    infos = artist_infos.get("Nirvana")
     if infos['infos'] is not None:
         print infos
     else:
