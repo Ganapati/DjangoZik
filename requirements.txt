@@ -3,3 +3,4 @@ mutagen
 requests
 beautifulsoup4
 djangorestframework
+bbcode

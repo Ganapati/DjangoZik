@@ -3,6 +3,7 @@
 import requests
 import json
 from django.conf import settings
+import bbcode
 
 
 class ArtistInfos:
@@ -40,7 +41,7 @@ class ArtistInfos:
                                        headers=headers)
                 json_details = json.loads(details.text)
                 data['infos'] = {'image': json_infos['results'][0]['thumb'],
-                                'text': json_details['profile']}
+                                'text': bbcode.render_html(json_details['profile'])}
             except:
                 # return data the next line
                 pass

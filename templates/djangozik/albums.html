@@ -11,7 +11,7 @@
             {% endif %}
             <h2>{{ artist.name }}</h2>
             {% if artist.text != null %}
-                <p>{{ artist.text }}</p>
+                <p>{% autoescape off %}{{ artist.text }}{% endautoescape %}</p>
             {% else %}
                 <p></p>
             {% endif %}

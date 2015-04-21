@@ -23,9 +23,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        self.stdout.write("Cleaning old songs")
         if options['verbose']:
-            self.stdout.write("Cleaning old songs")
             self.stdout.write("Scanning : %s" % settings.MEDIA_ROOT)
+        else:
+            self.stdout.write("Scanning music folder")
         songs = []
         for root, dirs, files in os.walk(settings.MEDIA_ROOT):
             for filename in files:
@@ -85,21 +87,17 @@ class Command(BaseCommand):
 
                 self.create_song(tags['title'], artist, style, album, songpath)
 
-        if options['verbose']:
-            self.stdout.write("Song scan finished")
+        self.stdout.write("Song scan finished")
 
         # Import artists
-        if options['verbose']:
-            self.stdout.write("Import artists")
+        self.stdout.write("Import artists")
         ImportArtists.import_artists()
 
         # Import covers
-        if options['verbose']:
-            self.stdout.write("Import covers")
+        self.stdout.write("Import covers")
         ImportCovers.import_covers()
 
-        if options['verbose']:
-            self.stdout.write("Scan finished")
+        self.stdout.write("Scan finished")
 
     def create_artist(self, artist, picture):
         artist, created = Artist.objects.get_or_create(name=artist,
