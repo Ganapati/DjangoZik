@@ -29,13 +29,15 @@
     </li>
     {% endfor %}
     {% for album in albums %}
-    <li>
-        <a class="async" href="{% url 'songs' 'album' album.slug %}">
-            <img class="album_cover" 
-            data-slug="{{ album.slug }}" src="{% if album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static album.picture %}{% endif %}" 
-            data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
-            {{ album }}
-        </a>
-    </li>
+        {% if album.slug %}
+            <li>
+                <a class="async" href="{% url 'songs' 'album' album.slug %}">
+                    <img class="album_cover" 
+                    data-slug="{{ album.slug }}" src="{% if album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static album.picture %}{% endif %}" 
+                    data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
+                    {{ album }}
+                </a>
+            </li>
+        {% endif %}
     {% endfor %}
 </ul>
