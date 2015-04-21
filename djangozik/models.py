@@ -7,7 +7,7 @@ class Artist(models.Model):
     picture = models.CharField(max_length=256,
                                null=True)
     text = models.TextField(null=True)
-    slug = models.SlugField()
+    slug = models.SlugField(db_index=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -22,7 +22,7 @@ class Artist(models.Model):
 
 class Style(models.Model):
     name = models.CharField(max_length=250)
-    slug = models.SlugField()
+    slug = models.SlugField(db_index=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -41,7 +41,7 @@ class Album(models.Model):
                             null=True)
     picture = models.CharField(max_length=256,
                                null=True)
-    slug = models.SlugField()
+    slug = models.SlugField(db_index=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -60,7 +60,7 @@ class Song(models.Model):
     style = models.ForeignKey(Style, related_name="song")
     album = models.ForeignKey(Album, related_name="song")
     filepath = models.CharField(max_length=256)
-    slug = models.SlugField()
+    slug = models.SlugField(db_index=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -76,7 +76,7 @@ class Song(models.Model):
 class Playlist(models.Model):
     name = models.CharField(max_length=250)
     songs = models.ManyToManyField(Song, related_name="playlist")
-    slug = models.SlugField()
+    slug = models.SlugField(db_index=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
