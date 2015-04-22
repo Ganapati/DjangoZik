@@ -6,7 +6,6 @@ from artistInfos import ArtistInfos
 
 
 class MetadataGrabber:
-
     def __init__(self):
         self.cover_grabber = CoverGrabber()
         self.artist_infos = ArtistInfos()
@@ -17,7 +16,7 @@ class MetadataGrabber:
             image_downloader = ImageDownloader(destination)
             if infos['infos']['image'] is not None:
                 file_path = image_downloader.download(infos['infos']['image'],
-                                                    filename)
+                                                      filename)
                 if file_path is not None:
                     infos['infos']['image'] = file_path
                     return infos
@@ -40,11 +39,11 @@ class MetadataGrabber:
         else:
             return None
 
+
 if __name__ == "__main__":
     print "test function"
     metadata_grabber = MetadataGrabber()
-    image = metadata_grabber.get_and_save_cover("black ice",
-                                                "/tmp/",
+    image = metadata_grabber.get_and_save_cover("black ice", "/tmp/",
                                                 "black_ice.jpg")
     if image is not None:
         print image

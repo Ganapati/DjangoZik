@@ -4,8 +4,7 @@ from django.db import models
 
 class Artist(models.Model):
     name = models.CharField(max_length=250)
-    picture = models.CharField(max_length=256,
-                               null=True)
+    picture = models.CharField(max_length=256, null=True)
     text = models.TextField(null=True)
     slug = models.SlugField(db_index=True)
 
@@ -37,10 +36,8 @@ class Style(models.Model):
 
 class Album(models.Model):
     name = models.CharField(max_length=250)
-    date = models.DateField('date released',
-                            null=True)
-    picture = models.CharField(max_length=256,
-                               null=True)
+    date = models.DateField('date released', null=True)
+    picture = models.CharField(max_length=256, null=True)
     slug = models.SlugField(db_index=True)
 
     def save(self, *args, **kwargs):

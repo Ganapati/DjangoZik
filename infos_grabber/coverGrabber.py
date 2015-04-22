@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 
 
 class CoverGrabber:
-
     def __init__(self, url=None):
         if url is None:
             self.url = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias=aps&field-keywords=cd'
@@ -26,6 +25,7 @@ class CoverGrabber:
             return image
         except:
             return None
+
 
 if __name__ == "__main__":
     print "Grab CD Cover from Amazon"

@@ -4,7 +4,6 @@ import requests
 
 
 class ImageDownloader:
-
     def __init__(self, destination):
         self.destination = destination
 
@@ -21,10 +20,13 @@ class ImageDownloader:
             return None
         return "%s%s" % (self.destination, name)
 
+
 if __name__ == "__main__":
     print "save image from remote url to local folder"
     image_downloader = ImageDownloader('/tmp/')
-    image_local_path = image_downloader.download('http://ecx.images-amazon.com/images/I/51DU8kmcx1L._SP160,160,0,T_.jpg', 'black_ice.jpg')
+    image_local_path = image_downloader.download(
+        'http://ecx.images-amazon.com/images/I/51DU8kmcx1L._SP160,160,0,T_.jpg',
+        'black_ice.jpg')
     if image_local_path is not None:
         print "Image saved to : %s" % image_local_path
     else:

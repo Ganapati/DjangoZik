@@ -15,7 +15,8 @@ class HomeView(TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['songs'] = Song.objects.order_by('-id')[:10]
         context['active'] = "home"
-        styles = Style.objects.values('name').annotate(Count('song')).order_by('-song__count')
+        styles = Style.objects.values('name').annotate(Count('song')).order_by(
+            '-song__count')
         context['stats_styles'] = styles[:10]
         context['nb_artists'] = Artist.objects.all().count()
         context['nb_songs'] = Song.objects.all().count()
@@ -64,7 +65,8 @@ class ArtistsView(TemplateView):
         if 'style' in self.kwargs.keys() and self.kwargs['style'] is not None:
             try:
                 style = Style.objects.filter(slug=self.kwargs['style'])
-                context['artists'] = Artist.objects.filter(song__style__in=style).distinct()
+                context['artists'] = Artist.objects.filter(
+                    song__style__in=style).distinct()
             except Style.DoesNotExist:
                 context['artists'] = []
         else:
@@ -88,7 +90,8 @@ class AlbumsView(TemplateView):
             try:
                 artist = Artist.objects.filter(slug=self.kwargs['artist'])
                 context['artists'] = artist
-                context['albums'] = Album.objects.filter(song__artist__in=artist).distinct()
+                context['albums'] = Album.objects.filter(
+                    song__artist__in=artist).distinct()
             except Artist.DoesNotExist:
                 context['albums'] = []
         else:
@@ -174,7 +177,6 @@ class SearchView(TemplateView):
 
 
 class AjaxView(BaseDetailView):
-
     def get(self, request, *args, **kwargs):
         method = self.kwargs['method']
         arg = self.kwargs['arg']
@@ -230,7 +232,8 @@ class AjaxView(BaseDetailView):
         if method == "add_radio":
             try:
                 try:
-                    nb_radio = Radio.objects.get(url=base64.b64decode(arg)).count()
+                    nb_radio = Radio.objects.get(
+                        url=base64.b64decode(arg)).count()
                     if nb_radio > 0:
                         raise Exception("Already exists")
                 except Radio.DoesNotExist:
@@ -239,8 +242,7 @@ class AjaxView(BaseDetailView):
                 radio = Radio()
                 radio.url = base64.b64decode(arg)
                 radio.save()
-                message = {"url": radio.url,
-                           "id": radio.id}
+                message = {"url": radio.url, "id": radio.id}
                 success = True
             except:
                 # Return False if error happened
@@ -255,15 +257,13 @@ class AjaxView(BaseDetailView):
                 playlist = Playlist()
                 playlist.name = arg
                 playlist.save()
-                message = {"slug": playlist.slug,
-                           "name": playlist.name}
+                message = {"slug": playlist.slug, "name": playlist.name}
                 success = True
             except:
                 # Return false if error happened
                 pass
 
-        data = {"success": success,
-                "message": message}
+        data = {"success": success, "message": message}
 
         return self.render_to_json_response(data)
 
@@ -271,8 +271,5 @@ class AjaxView(BaseDetailView):
         """
         Returns a JSON response, transforming 'context' to make the payload.
         """
-        return HttpResponse(
-            json.dumps(context),
-            content_type='application/json',
-            **response_kwargs
-        )
+        return HttpResponse(json.dumps(context),
+                            content_type='application/json', **response_kwargs)

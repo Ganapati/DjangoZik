@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils.encoding import smart_text
 from django.conf import settings
 from djangozik.models import Song, Artist, Album, Style
-from libs.metadataGrabber import MetadataGrabber
+from infos_grabber.metadataGrabber import MetadataGrabber
 from optparse import make_option
 import re
 import os
@@ -13,13 +13,11 @@ import mutagen
 
 class Command(BaseCommand):
     help = "Scan music folder and add new songs."
-    option_list = BaseCommand.option_list + (
-        make_option('--verbose',
-                    action='store_true',
-                    dest='verbose',
-                    default=False,
-                    help='Verbose mode'),
-    )
+    option_list = BaseCommand.option_list + (make_option('--verbose',
+                                                         action='store_true',
+                                                         dest='verbose',
+                                                         default=False,
+                                                         help='Verbose mode'), )
 
     def handle(self, *args, **options):
 
