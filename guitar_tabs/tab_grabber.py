@@ -19,7 +19,7 @@ class TabGrabber(object):
                 if '[ch]' in tab_content:
                     tab_content = tab_content.replace('[ch]', '')
                     response = tab_content.replace('[/ch]', '')
-        except ValueError:
+        except:
             return response
         return response
 
