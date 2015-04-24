@@ -5,7 +5,11 @@
     {% for artist in artists %}
         <div>
             {%if artist.picture != null %}
-                <img src="{% static artist.picture %}" style="float:left; margin: 0px 24px 10px 0px;max-width: 500px;"/>
+                {% if 'http' in artist.picture %}
+                    <img src="{{ artist.picture }}" style="float:left; margin: 0px 24px 10px 0px;max-width: 500px;"/>
+                {% else %}
+                    <img src="{% static artist.picture %}" style="float:left; margin: 0px 24px 10px 0px;max-width: 500px;"/>
+                {% endif %}
             {% else %}
                 <img src="{% static "images/no_band.jpg" %}" style="float:left; margin: 0px 24px 10px 0px;max-width: 500px;"/>
             {% endif %}
@@ -24,7 +28,7 @@
     <li>
         <a class="async" href="{% url 'songs' 'artist' artist.slug %}">
             <img class="album" src="{% static 'images/no_cover.gif' %}" />
-            All Albums for {{ artist }}
+            All Albums for {{ artist.name }}
         </a>
     </li>
     {% endfor %}
@@ -33,9 +37,18 @@
             <li>
                 <a class="async" href="{% url 'songs' 'album' album.slug %}">
                     <img class="album_cover" 
-                    data-slug="{{ album.slug }}" src="{% if album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static album.picture %}{% endif %}" 
+                    data-slug="{{ album.slug }}" src="
+                    {% if album.picture == None %}
+                        {% static 'images/no_cover.gif' %}
+                    {% else %}
+                        {% if 'http' in album.picture %}
+                        {{ album.picture }}
+                        {% else %}
+                            {% static album.picture %}
+                        {% endif %}
+                    {% endif %}" 
                     data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
-                    {{ album }}
+                    {{ album.name }}
                 </a>
             </li>
         {% endif %}

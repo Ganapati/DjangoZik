@@ -8,9 +8,18 @@
         <li>
             <a class="async" href="{% url 'albums' artist.slug %}">
                 <img class="artist_picture thumb_medium" 
-                             data-slug="{{ artist.slug }}" src="{% if artist.picture == None %}{% static 'images/no_band.jpg' %}{% else %}{% static artist.picture %}{% endif %}" 
+                data-slug="{{ artist.slug }}" src="
+                {% if artist.picture == None %}
+                        {% static 'images/no_band.jpg' %}
+                    {% else %}
+                        {% if 'http' in artist.picture %}
+                            {{ artist.picture }}
+                        {% else %}
+                            {% static artist.picture %}
+                        {% endif %}
+                    {% endif %}" 
                              data-picture="{% if artist.picture != None %}yes{% else %}no{% endif %}" />
-                {{ artist }}
+                {{ artist.name }}
             </a>
         </li>
         {% endfor %}
@@ -33,9 +42,18 @@
             <li>
                 <a class="async" href="{% url 'songs' 'album' album.slug %}">
                     <img class="album_cover" 
-                    data-slug="{{ album.slug }}" src="{% if album.picture == None %}{% static 'images/no_cover.gif' %}{% else %}{% static album.picture %}{% endif %}" 
+                    data-slug="{{ album.slug }}" src="
+                    {% if album.picture == None %}
+                        {% static 'images/no_cover.gif' %}
+                    {% else %}
+                        {% if 'http' in album.picture %}
+                            {{ album.picture }}
+                        {% else %}
+                            {% static album.picture %}
+                        {% endif %}
+                    {% endif %}" 
                     data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
-                    {{ album }}
+                    {{ album.name }}
                 </a>
             </li>
         {% endfor %}

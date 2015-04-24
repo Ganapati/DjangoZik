@@ -42,6 +42,7 @@ urlpatterns = patterns(
                                 login_required(AjaxView.as_view()),
                                 name='ajax'),
         url(r'^admin/', include(admin.site.urls)),
+        url(r'^api/', include('api.urls')),
         url(r'^tab/$', login_required(GuitarTabsView.as_view()),
             name="tab"),
         url(r'^favicon\.', RedirectView.as_view(url='/static/favicon.ico'))

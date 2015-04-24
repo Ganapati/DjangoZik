@@ -5,6 +5,8 @@ from djangozik.models import Song, Artist, Album, Playlist, Style, Radio
 from django.views.generic.detail import BaseDetailView
 from django.db.models import Count
 import base64
+from api.client import ApiClient
+from api.models import RemoteInstance
 
 
 class HomeView(TemplateView):
@@ -22,6 +24,7 @@ class HomeView(TemplateView):
         context['nb_songs'] = Song.objects.all().count()
         context['nb_albums'] = Album.objects.all().count()
         context['nb_styles'] = Style.objects.all().count()
+        context['nb_friends'] = RemoteInstance.objects.all().count()
         context['modal_playlists'] = Playlist.objects.all()
         return context
 
@@ -32,12 +35,19 @@ class SongsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SongsView, self).get_context_data(**kwargs)
 
+        remote_instances = RemoteInstance.objects.all()
         songs = []
 
         if self.kwargs['type'] == 'album':
             album = Album.objects.filter(slug=self.kwargs['key'])
             context['album'] = album
             songs = Song.objects.filter(album__in=album)
+            for remote_instance in remote_instances:
+                api_client = ApiClient(remote_instance.url,
+                                       remote_instance.key)
+                styles = api_client.album(self.kwargs['key'])
+                songs.update(styles['songs'])
+
         elif self.kwargs['type'] == 'playlist':
             playlist = Playlist.objects.get(slug=self.kwargs['key'])
             context['playlist'] = playlist
@@ -46,6 +56,11 @@ class SongsView(TemplateView):
             artist = Artist.objects.filter(slug=self.kwargs['key'])
             context['artist'] = artist
             songs = Song.objects.filter(artist=artist).order_by('album__name')
+            for remote_instance in remote_instances:
+                api_client = ApiClient(remote_instance.url,
+                                       remote_instance.key)
+                artists = api_client.artists(self.kwargs['key'])
+                songs.update(artists['songs'])
 
         context['type'] = self.kwargs['type']
         context['songs'] = songs
@@ -61,16 +76,30 @@ class ArtistsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ArtistsView, self).get_context_data(**kwargs)
 
+        remote_instances = RemoteInstance.objects.all()
         style = None
         if 'style' in self.kwargs.keys() and self.kwargs['style'] is not None:
             try:
                 style = Style.objects.filter(slug=self.kwargs['style'])
                 context['artists'] = Artist.objects.filter(
-                    song__style__in=style).distinct()
+                    song__style__in=style).distinct().values('name', 'slug',
+                                                             'text', 'picture')
+                for remote_instance in remote_instances:
+                    api_client = ApiClient(remote_instance.url,
+                                           remote_instance.key)
+                    styles = api_client.style(self.kwargs['style'])
+                    context['artists'].update(styles['artists'])
+
             except Style.DoesNotExist:
                 context['artists'] = []
         else:
-            context['artists'] = Artist.objects.all()
+            context['artists'] = Artist.objects.all().values('name', 'slug',
+                                                             'text', 'picture')
+            for remote_instance in remote_instances:
+                api_client = ApiClient(remote_instance.url,
+                                       remote_instance.key)
+                artists = api_client.artist()
+                context['artists'].update(artists['artists'])
 
         context['active'] = "artists"
         context['modal_playlists'] = Playlist.objects.all()
@@ -84,18 +113,32 @@ class AlbumsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AlbumsView, self).get_context_data(**kwargs)
 
+        remote_instances = RemoteInstance.objects.all()
         artist = None
         context['artists'] = None
-        if 'artist' in self.kwargs.keys() and self.kwargs['artist'] is not None:
+        if ('artist' in self.kwargs.keys() and
+            self.kwargs['artist'] is not None):
             try:
                 artist = Artist.objects.filter(slug=self.kwargs['artist'])
                 context['artists'] = artist
                 context['albums'] = Album.objects.filter(
                     song__artist__in=artist).distinct()
+                for remote_instance in remote_instances:
+                    api_client = ApiClient(remote_instance.url,
+                                           remote_instance.key)
+                    artists = api_client.artist(self.kwargs['artist'])
+                    context['albums'].update(artists['albums'])
+
             except Artist.DoesNotExist:
                 context['albums'] = []
         else:
-            context['albums'] = Album.objects.all()
+            context['albums'] = Album.objects.all().values('slug', 'name',
+                                                           'picture', 'date')
+            for remote_instance in remote_instances:
+                api_client = ApiClient(remote_instance.url,
+                                       remote_instance.key)
+                albums = api_client.album()
+                context['albums'].update(albums['albums'])
 
         context['active'] = "albums"
         context['modal_playlists'] = Playlist.objects.all()
@@ -108,7 +151,14 @@ class StylesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StylesView, self).get_context_data(**kwargs)
-        context['styles'] = Style.objects.all()
+        context['styles'] = Style.objects.all().values('name', 'slug')
+
+        remote_instances = RemoteInstance.objects.all()
+        for remote_instance in remote_instances:
+            api_client = ApiClient(remote_instance.url, remote_instance.key)
+            styles = api_client.style()
+            context['styles'].update(styles['styles'])
+
         context['active'] = "styles"
         context['modal_playlists'] = Playlist.objects.all()
         return context
@@ -147,17 +197,20 @@ class SearchView(TemplateView):
         keyword = self.kwargs['keyword']
 
         try:
-            artists = Artist.objects.filter(name__icontains=keyword)
+            artists = Artist.objects.filter(name__icontains=keyword).values(
+                'name', 'slug', 'text', 'picture')
         except Artist.DoesNotExist:
             artists = []
 
         try:
-            albums = Album.objects.filter(name__icontains=keyword)
+            albums = Album.objects.filter(name__icontains=keyword).values(
+                'name', 'date', 'picture', 'slug')
         except Album.DoesNotExist:
             albums = []
 
         try:
-            songs = Song.objects.filter(title__icontains=keyword)
+            songs = Song.objects.filter(title__icontains=keyword).values(
+                'title', 'filepath', 'slug')
         except Song.DoesNotExist:
             songs = []
 
@@ -165,6 +218,14 @@ class SearchView(TemplateView):
             playlists = Playlist.objects.filter(name__icontains=keyword)
         except Playlist.DoesNotExist:
             playlists = []
+
+        remote_instances = RemoteInstance.objects.all()
+        for remote_instance in remote_instances:
+            api_client = ApiClient(remote_instance.url, remote_instance.key)
+            search = api_client.search(keyword)
+            artists.update(search['artists'])
+            songs.update(search['songs'])
+            albums.update(search['albums'])
 
         context['artists'] = artists
         context['albums'] = albums

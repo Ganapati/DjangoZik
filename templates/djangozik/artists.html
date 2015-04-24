@@ -6,7 +6,16 @@
     <li>
         <a class="async" href="{% url 'albums' artist.slug %}">
             <img class="artist_picture thumb_medium" 
-                         data-slug="{{ artist.slug }}" src="{% if artist.picture == None %}{% static 'images/no_band.jpg' %}{% else %}{% static artist.picture %}{% endif %}" 
+            data-slug="{{ artist.slug }}" src="
+            {% if artist.picture == None %}
+                {% static 'images/no_band.jpg' %}
+            {% else %}
+                {% if 'http' in artist.picture %}
+                    {{ artist.picture }}
+                {% else %}
+                    {% static artist.picture %}
+                {% endif %}
+            {% endif %}" 
                          data-picture="{% if artist.picture != None %}yes{% else %}no{% endif %}" /> 
             {{ artist }}
         </a>
