@@ -1,14 +1,11 @@
 import os
 
-
 # Django settings for djangozik project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('Admin', 'admin@mywebsite.foo'),
-)
+ADMINS = (('Admin', 'admin@mywebsite.foo'), )
 
 MANAGERS = ADMINS
 
@@ -55,13 +52,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = '/media/storage/musique/'
+MEDIA_ROOT = ''
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = '/media/'
-
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -77,25 +73,20 @@ STATIC_URL = '/static/'
 STATIC_PATH = os.path.join(BASE_DIR, "static")
 
 # Additional locations of static files
-STATICFILES_DIRS = (
-    STATIC_PATH,
-)
+STATICFILES_DIRS = (STATIC_PATH, )
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder', )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'FOOBAR'
+SECRET_KEY = ''
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
+TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader', )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -103,38 +94,25 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', )
 
 ROOT_URLCONF = 'djangozik.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'djangozik.wsgi.application'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates/'),
-)
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates/'), )
 
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'djangozik',
-    'rest_framework',
-    'libs'
-)
+INSTALLED_APPS = ('django.contrib.auth', 'django.contrib.contenttypes',
+                  'django.contrib.sessions', 'django.contrib.sites',
+                  'django.contrib.messages', 'django.contrib.staticfiles',
+                  'django.contrib.admin', 'djangozik', 'infos_grabber',
+                  'guitar_tabs', 'rest_framework', 'api',)
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -145,9 +123,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
+        'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}
     },
     'handlers': {
         'mail_admins': {
@@ -157,10 +133,9 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
+        'django.request':
+        {'handlers': ['mail_admins'],
+         'level': 'ERROR',
+         'propagate': True, },
     }
 }
