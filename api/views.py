@@ -6,10 +6,6 @@ from djangozik.models import Album, Artist, Song, Style
 from api.models import ApiKey
 
 
-class DebugError(Exception):
-    pass
-
-
 class ArtistApiView(APIView):
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
@@ -25,7 +21,7 @@ class ArtistApiView(APIView):
                 content['artists'] = Artist.objects.all().values(
                     'name', 'slug', 'picture', 'text')
             api_response.set_content(content)
-        except DebugError:
+        except:
             api_response.content = ''
             api_response.status = status.HTTP_404_NOT_FOUND
         return Response(api_response.content, api_response.status)
@@ -79,7 +75,7 @@ class AlbumApiView(APIView):
                 content['albums'] = Album.objects.all().values(
                     'name', 'slug', 'picture', 'artist__name', 'artist__slug')
             api_response.set_content(content)
-        except DebugError:
+        except:
             api_response.content = ''
             api_response.status = status.HTTP_404_NOT_FOUND
 
@@ -94,7 +90,7 @@ class StyleApiView(APIView):
         try:
             content['styles'] = Style.objects.all().values('name', 'slug')
             api_response.set_content(content)
-        except DebugError:
+        except:
             api_response.content = ''
             api_response.status = status.HTTP_404_NOT_FOUND
 
@@ -123,7 +119,7 @@ class SongApiView(APIView):
             if album is None and artist is None:
                 api_response.content = ''
                 api_response.status = status.HTTP_404_NOT_FOUND
-        except DebugError:
+        except:
             api_response.content = ''
             api_response.status = status.HTTP_404_NOT_FOUND
 
