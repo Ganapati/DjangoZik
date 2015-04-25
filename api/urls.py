@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
-from api.views import ArtistApiView, AlbumApiView, StyleApiView, SearchApiView
+from api.views import ArtistApiView, AlbumApiView
+from api.views import StyleApiView, SearchApiView
+from api.views import SongApiView
 
-# Authentication
 urlpatterns = patterns('',
                        url(r'^artist/?$',
                            ArtistApiView.as_view(),
@@ -16,4 +17,7 @@ urlpatterns = patterns('',
                        url(r'^search/?$',
                            SearchApiView.as_view(),
                            name='api_search'),
+                       url(r'^song/?$',
+                           SongApiView.as_view(),
+                           name='api_song'),
                        )
