@@ -9,7 +9,17 @@ from api.client import ApiClient
 from api.models import RemoteInstance
 
 
-class HomeView(TemplateView):
+class DjangoZikView(TemplateView):
+    def merge_dict(self, d1, d2):
+        d1 = [entry for entry in d1]
+        for item in d2:
+            l = [i.values() for i in d1]
+            if item['slug'] not in [item for sublist in l for item in sublist]:
+                d1.append(item)
+        return d1
+
+
+class HomeView(DjangoZikView):
 
     template_name = "djangozik/home.html"
 
@@ -24,12 +34,12 @@ class HomeView(TemplateView):
         context['nb_songs'] = Song.objects.all().count()
         context['nb_albums'] = Album.objects.all().count()
         context['nb_styles'] = Style.objects.all().count()
-        context['nb_friends'] = RemoteInstance.objects.all().count()
+        context['nb_peers'] = RemoteInstance.objects.all().count()
         context['modal_playlists'] = Playlist.objects.all()
         return context
 
 
-class SongsView(TemplateView):
+class SongsView(DjangoZikView):
     template_name = "djangozik/songs.html"
 
     def get_context_data(self, **kwargs):
@@ -41,26 +51,36 @@ class SongsView(TemplateView):
         if self.kwargs['type'] == 'album':
             album = Album.objects.filter(slug=self.kwargs['key'])
             context['album'] = album
-            songs = Song.objects.filter(album__in=album)
+            songs = Song.objects.filter(album__in=album).values(
+                'title', 'slug', 'filepath', 'album__slug', 'album__name', 'album__picture',
+                'artist__name', 'artist__slug', 'style__name', 'style__slug')
             for remote_instance in remote_instances:
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
-                styles = api_client.album(self.kwargs['key'])
-                songs.update(styles['songs'])
+                remote_songs = api_client.songs(album=self.kwargs['key'])
+                songs = self.merge_dict(songs, remote_songs['songs'])
 
         elif self.kwargs['type'] == 'playlist':
             playlist = Playlist.objects.get(slug=self.kwargs['key'])
             context['playlist'] = playlist
-            songs = Song.objects.filter(playlist=playlist)
+            songs = Song.objects.filter(playlist=playlist).values(
+                'title', 'slug', 'filepath', 'album__slug', 'album__name', 'album__picture',
+                'artist__name', 'artist__slug', 'style__name', 'style__slug')
+
         elif self.kwargs['type'] == 'artist':
             artist = Artist.objects.filter(slug=self.kwargs['key'])
             context['artist'] = artist
-            songs = Song.objects.filter(artist=artist).order_by('album__name')
+            songs = Song.objects.filter(artist=artist).order_by(
+                'album__name').values('title', 'slug', 'filepath',
+                                      'album__slug', 'album__name', 'album__picture',
+                                      'artist__name', 'artist__slug',
+                                      'style__name', 'style__slug')
+
             for remote_instance in remote_instances:
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
-                artists = api_client.artists(self.kwargs['key'])
-                songs.update(artists['songs'])
+                remote_songs = api_client.songs(artist=self.kwargs['key'])
+                songs = self.merge_dict(songs, remote_songs['songs'])
 
         context['type'] = self.kwargs['type']
         context['songs'] = songs
@@ -69,7 +89,7 @@ class SongsView(TemplateView):
         return context
 
 
-class ArtistsView(TemplateView):
+class ArtistsView(DjangoZikView):
 
     template_name = "djangozik/artists.html"
 
@@ -87,8 +107,10 @@ class ArtistsView(TemplateView):
                 for remote_instance in remote_instances:
                     api_client = ApiClient(remote_instance.url,
                                            remote_instance.key)
-                    styles = api_client.style(self.kwargs['style'])
-                    context['artists'].update(styles['artists'])
+                    remote_artists = api_client.artists(
+                        style=self.kwargs['style'])
+                    context['artists'] = self.merge_dict(
+                        context['artists'], remote_artists['artists'])
 
             except Style.DoesNotExist:
                 context['artists'] = []
@@ -98,15 +120,16 @@ class ArtistsView(TemplateView):
             for remote_instance in remote_instances:
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
-                artists = api_client.artist()
-                context['artists'].update(artists['artists'])
+                remote_artists = api_client.artists()
+                context['artists'] = self.merge_dict(context['artists'],
+                                                     remote_artists['artists'])
 
         context['active'] = "artists"
         context['modal_playlists'] = Playlist.objects.all()
         return context
 
 
-class AlbumsView(TemplateView):
+class AlbumsView(DjangoZikView):
 
     template_name = "djangozik/albums.html"
 
@@ -122,30 +145,34 @@ class AlbumsView(TemplateView):
                 artist = Artist.objects.filter(slug=self.kwargs['artist'])
                 context['artists'] = artist
                 context['albums'] = Album.objects.filter(
-                    song__artist__in=artist).distinct()
+                    song__artist__in=artist).distinct().values('picture',
+                                                               'slug', 'name')
                 for remote_instance in remote_instances:
                     api_client = ApiClient(remote_instance.url,
                                            remote_instance.key)
-                    artists = api_client.artist(self.kwargs['artist'])
-                    context['albums'].update(artists['albums'])
+                    remote_albums = api_client.albums(
+                        artist=self.kwargs['artist'])
+                    context['albums'] = self.merge_dict(
+                        context['albums'], remote_albums['albums'])
 
             except Artist.DoesNotExist:
                 context['albums'] = []
         else:
-            context['albums'] = Album.objects.all().values('slug', 'name',
-                                                           'picture', 'date')
+            context['albums'] = Album.objects.all().values('picture', 'slug',
+                                                           'name')
             for remote_instance in remote_instances:
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
-                albums = api_client.album()
-                context['albums'].update(albums['albums'])
+                remote_albums = api_client.albums()
+                context['albums'] = self.merge_dict(context['albums'],
+                                                    remote_albums['albums'])
 
         context['active'] = "albums"
         context['modal_playlists'] = Playlist.objects.all()
         return context
 
 
-class StylesView(TemplateView):
+class StylesView(DjangoZikView):
 
     template_name = "djangozik/styles.html"
 
@@ -156,15 +183,16 @@ class StylesView(TemplateView):
         remote_instances = RemoteInstance.objects.all()
         for remote_instance in remote_instances:
             api_client = ApiClient(remote_instance.url, remote_instance.key)
-            styles = api_client.style()
-            context['styles'].update(styles['styles'])
+            remote_styles = api_client.styles()
+            context['styles'] = self.merge_dict(context['styles'],
+                                                remote_styles['styles'])
 
         context['active'] = "styles"
         context['modal_playlists'] = Playlist.objects.all()
         return context
 
 
-class PlaylistsView(TemplateView):
+class PlaylistsView(DjangoZikView):
 
     template_name = "djangozik/playlists.html"
 
@@ -176,7 +204,7 @@ class PlaylistsView(TemplateView):
         return context
 
 
-class RadiosView(TemplateView):
+class RadiosView(DjangoZikView):
 
     template_name = "djangozik/radios.html"
 
@@ -188,7 +216,7 @@ class RadiosView(TemplateView):
         return context
 
 
-class SearchView(TemplateView):
+class SearchView(DjangoZikView):
 
     template_name = "djangozik/search.html"
 
@@ -223,9 +251,9 @@ class SearchView(TemplateView):
         for remote_instance in remote_instances:
             api_client = ApiClient(remote_instance.url, remote_instance.key)
             search = api_client.search(keyword)
-            artists.update(search['artists'])
-            songs.update(search['songs'])
-            albums.update(search['albums'])
+            artists = self.merge_dict(artists, search['artists'])
+            songs = self.merge_dict(songs, search['songs'])
+            albums = self.merge_dict(albums, search['albums'])
 
         context['artists'] = artists
         context['albums'] = albums

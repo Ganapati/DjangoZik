@@ -10,7 +10,7 @@
         {% for style in styles %}
         <tr>
             <td>
-                <a class="async" href="{% url 'artists' style.slug %}">{{ style }}</a>
+                <a class="async" href="{% url 'artists' style.slug %}">{{ style.name }}</a>
             </td>
         </tr>
         {% endfor %}

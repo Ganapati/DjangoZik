@@ -17,28 +17,27 @@
         <tr>
             <td>
                 <img class="album_cover thumb_small" 
-                data-slug="{{ song.album.slug }}" src="
-                {% if song.album.picture == None %}
+                data-slug="{{ song.album__slug }}" src="
+                {% if not song.album__picture %}
                     {% static 'images/no_cover.gif' %}
+                {% else %}
+                    {% if 'http' in song.album__picture %}
+                    {{ song.album__picture }}
                     {% else %}
-                    {% if 'http' in song.album.picture %}
-                        {{ song.album.picture }}
-                    {% else %}
-                        {% static song.album.picture %}
+                    {% static song.album__picture %}
                     {% endif %}
                 {% endif %}" 
-                     data-picture="{% if song.album.picture != None %}yes{% else %}no{% endif %}" />
+                     data-picture="{% if song.album__picture %}yes{% else %}no{% endif %}" />
             </td>
-            <td><a class="song" data-source="{{ MEDIA_URL }}{{ song.filepath }}" href="">{{ song.title }}</a></td>
-            {% if song.album %}
-                <td><a class="async" href="{% url "songs" "album" song.album.slug %}">{{ song.album.name }}</a></td>
+            <td>
+            {% if 'http' in song.title %}
+                <a class="song" data-source="{{ song.filepath }}" href="">{{ song.title }}</a></td>
+            {% else %}
+                <a class="song" data-source="{{ MEDIA_URL }}{{ song.filepath }}" href="">{{ song.title }}</a></td>
             {% endif %}
-            {% if song.artist %}
-                <td><a class="async" href="{% url  "albums" song.artist.slug %}">{{ song.artist.name }}</a></td>
-            {% endif %}
-            {% if song.style %}
-                <td><a class="async" href="{% url  "artists" song.style.slug %}">{{ song.style.name }}</a></td>
-            {% endif %}
+            <td><a class="async" href="/songs/album/{{song.album__slug }}">{{ song.album__name }}</a></td>
+            <td><a class="async" href="{% url  "albums" song.artist__slug %}">{{ song.artist__name }}</a></td>
+            <td><a class="async" href="{% url  "artists" song.style__slug %}">{{ song.style__name }}</a></td>
             <td>
                 <a href="#" class="add_to_playlist" data-slug="{{ song.slug }}">
                     <span class="glyphicon glyphicon-plus-sign"></span>

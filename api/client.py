@@ -4,7 +4,7 @@ import json
 
 class ApiClient(object):
     def __init__(self, endpoint=None, key=None):
-        self.api_path = '/api/%(type)s'
+        self.api_path = '/api/%s'
         self.endpoint = endpoint if endpoint[-1] != '/' else endpoint[:-1]
         self.remote_media = "%s%s" % (self.endpoint, '/media/')
         self.remote_static = "%s%s" % (self.endpoint, '/static/')
@@ -14,7 +14,7 @@ class ApiClient(object):
         if album is not None:
             songs = self.request('song', {'album': album})
         elif artist is not None:
-            songs = self.request('song', {'artist': album})
+            songs = self.request('song', {'artist': artist})
         else:
             songs = {}
         return songs
@@ -47,25 +47,16 @@ class ApiClient(object):
     def request(self, data_type, params={}):
         try:
             params['key'] = self.key
-            path = "%s%s" % (self.endpoint, self.api_path % data_type)
+            path = "%s%s" % (self.endpoint, (self.api_path % data_type))
             response = requests.get(path, params=params)
             if response.status_code == 200:
                 data = response.text
-                json_data = json.dumps(data)
-
                 # Add full domain name to relative resource path
-                self.fixup(json_data, 'filepath', self.remote_media)
-                self.fixup(json_data, 'picture', self.temote_static)
-
-                return json.dumps(json_data)
+                data = data.replace('#media#', self.remote_media)
+                data = data.replace('#static#', self.remote_static)
+                json_data = json.loads(data)
+                return json_data
             else:
-                raise Exception()
+                raise ValueError()
         except ValueError:
             return {}
-
-    def fixup(self, adict, k, v):
-        for key in adict.keys():
-            if k in key:
-                adict[key] = '%s%s' % (v, adict[key])
-            elif type(adict[key]) is dict:
-                self.fixup(adict[key], k, v)

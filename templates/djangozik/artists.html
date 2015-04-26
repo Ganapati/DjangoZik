@@ -17,7 +17,7 @@
                 {% endif %}
             {% endif %}" 
                          data-picture="{% if artist.picture != None %}yes{% else %}no{% endif %}" /> 
-            {{ artist }}
+            {{ artist.name }}
         </a>
     </li>
     {% endfor %}
