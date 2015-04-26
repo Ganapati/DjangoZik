@@ -340,17 +340,13 @@ class AjaxView(BaseDetailView):
         # Add a playlist
         if method == "add_playlist":
             try:
-                nb_playlist = Playlist.objects.get(name=arg).count()
-                if nb_playlist > 0:
-                    raise Exception("Already exists")
+                Playlist.objects.get(name=arg).count()
+            except Playlist.DoesNotExist:
                 playlist = Playlist()
                 playlist.name = arg
                 playlist.save()
                 message = {"slug": playlist.slug, "name": playlist.name}
                 success = True
-            except:
-                # Return false if error happened
-                pass
 
         data = {"success": success, "message": message}
 
