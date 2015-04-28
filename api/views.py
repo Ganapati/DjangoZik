@@ -4,9 +4,11 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from djangozik.models import Album, Artist, Song, Style
 from api.models import ApiKey
+from rest_framework_extensions.cache.decorators import cache_response
 
 
 class ArtistApiView(APIView):
+    @cache_response()
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -32,6 +34,7 @@ class ArtistApiView(APIView):
 
 
 class SearchApiView(APIView):
+    @cache_response
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -75,6 +78,7 @@ class SearchApiView(APIView):
 
 
 class AlbumApiView(APIView):
+    @cache_response
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -101,6 +105,7 @@ class AlbumApiView(APIView):
 
 
 class StyleApiView(APIView):
+    @cache_response
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -116,6 +121,7 @@ class StyleApiView(APIView):
 
 
 class SongApiView(APIView):
+    @cache_response
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()

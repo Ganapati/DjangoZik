@@ -12,9 +12,9 @@ from api.models import RemoteInstance
 class DjangoZikView(TemplateView):
     def merge_dict(self, d1, d2):
         d1 = [entry for entry in d1]
+        slug_list = [i['slug'] for i in d1]
         for item in d2:
-            l = [i.values() for i in d1]
-            if item['slug'] not in [item for sublist in l for item in sublist]:
+            if item['slug'] not in slug_list:
                 d1.append(item)
         return d1
 
