@@ -10,10 +10,12 @@ from rest_framework_extensions.cache.decorators import cache_response
 class DjangoZikAPIView(APIView):
     def calculate_cache_key(self, view_instance, view_method,
                             request, args, kwargs):
-            return '.'.join([
-                '.'.join(request.GET),
-                request.path
-            ])
+        get_params = request.GET.copy()
+        del get_params['key']
+        return '.'.join([
+            '.'.join(request.GET),
+            request.path
+        ])
 
 
 class ArtistApiView(DjangoZikAPIView):
