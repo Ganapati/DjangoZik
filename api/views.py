@@ -34,7 +34,7 @@ class ArtistApiView(APIView):
 
 
 class SearchApiView(APIView):
-    @cache_response
+    @cache_response()
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -78,7 +78,7 @@ class SearchApiView(APIView):
 
 
 class AlbumApiView(APIView):
-    @cache_response
+    @cache_response()
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -105,7 +105,7 @@ class AlbumApiView(APIView):
 
 
 class StyleApiView(APIView):
-    @cache_response
+    @cache_response()
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -121,7 +121,7 @@ class StyleApiView(APIView):
 
 
 class SongApiView(APIView):
-    @cache_response
+    @cache_response()
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
