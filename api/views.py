@@ -82,7 +82,7 @@ class SearchApiView(DjangoZikAPIView):
             for song in songs:
                 song['filepath'] = "%s%s" % ('#media#', song['filepath'])
                 song['album_picture'] = "%s%s" % ('#static#',
-                                                  song['album_picture'])
+                                                  song['album__picture'])
 
         except Song.DoesNotExist:
             songs = []
