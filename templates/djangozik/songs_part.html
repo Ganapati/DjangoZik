@@ -30,7 +30,7 @@
                      data-picture="{% if song.album__picture %}yes{% else %}no{% endif %}" />
             </td>
             <td>
-            {% if 'http' in song.title %}
+            {% if 'http' in song.filepath %}
                 <a class="song" data-source="{{ song.filepath }}" href="">{{ song.title }}</a></td>
             {% else %}
                 <a class="song" data-source="{{ MEDIA_URL }}{{ song.filepath }}" href="">{{ song.title }}</a></td>
