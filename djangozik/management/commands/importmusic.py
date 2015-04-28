@@ -129,7 +129,7 @@ class Command(BaseCommand):
         return song
 
     def get_tags(self, song):
-        title = song.decode('utf-8', 'ignore')
+        title = song.decode('utf-8', 'ignore').split('/')[-1]
         date = "0001-01-01"
         album = "Unknown"
         genre = "Unknown"
