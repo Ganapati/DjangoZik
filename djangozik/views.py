@@ -63,7 +63,10 @@ class SongsView(DjangoZikView):
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
                 remote_songs = api_client.songs(album=self.kwargs['key'])
-                songs = self.merge_dict(songs, remote_songs['songs'])
+                try:
+                    songs = self.merge_dict(songs, remote_songs['songs'])
+                except KeyError:
+                    pass
 
         elif self.kwargs['type'] == 'playlist':
             playlist = Playlist.objects.get(slug=self.kwargs['key'])
@@ -86,7 +89,10 @@ class SongsView(DjangoZikView):
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
                 remote_songs = api_client.songs(artist=self.kwargs['key'])
-                songs = self.merge_dict(songs, remote_songs['songs'])
+                try:
+                    songs = self.merge_dict(songs, remote_songs['songs'])
+                except KeyError:
+                    pass
 
         context['type'] = self.kwargs['type']
         context['songs'] = songs
@@ -115,8 +121,11 @@ class ArtistsView(DjangoZikView):
                                            remote_instance.key)
                     remote_artists = api_client.artists(
                         style=self.kwargs['style'])
-                    context['artists'] = self.merge_dict(
-                        context['artists'], remote_artists['artists'])
+                    try:
+                        context['artists'] = self.merge_dict(
+                            context['artists'], remote_artists['artists'])
+                    except KeyError:
+                        pass
 
             except Style.DoesNotExist:
                 context['artists'] = []
@@ -127,8 +136,11 @@ class ArtistsView(DjangoZikView):
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
                 remote_artists = api_client.artists()
-                context['artists'] = self.merge_dict(context['artists'],
-                                                     remote_artists['artists'])
+                try:
+                    context['artists'] = self.merge_dict(context['artists'],
+                                                        remote_artists['artists'])
+                except KeyError:
+                    pass
 
         context['active'] = "artists"
         context['modal_playlists'] = Playlist.objects.all()
@@ -158,8 +170,11 @@ class AlbumsView(DjangoZikView):
                                            remote_instance.key)
                     remote_albums = api_client.albums(
                         artist=self.kwargs['artist'])
-                    context['albums'] = self.merge_dict(
-                        context['albums'], remote_albums['albums'])
+                    try:
+                        context['albums'] = self.merge_dict(
+                            context['albums'], remote_albums['albums'])
+                    except KeyError:
+                        pass
 
             except Artist.DoesNotExist:
                 context['albums'] = []
@@ -170,8 +185,11 @@ class AlbumsView(DjangoZikView):
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
                 remote_albums = api_client.albums()
-                context['albums'] = self.merge_dict(context['albums'],
-                                                    remote_albums['albums'])
+                try:
+                    context['albums'] = self.merge_dict(context['albums'],
+                                                        remote_albums['albums'])
+                except KeyError:
+                    pass
 
         context['active'] = "albums"
         context['modal_playlists'] = Playlist.objects.all()
@@ -190,8 +208,11 @@ class StylesView(DjangoZikView):
         for remote_instance in remote_instances:
             api_client = ApiClient(remote_instance.url, remote_instance.key)
             remote_styles = api_client.styles()
-            context['styles'] = self.merge_dict(context['styles'],
-                                                remote_styles['styles'])
+            try:
+                context['styles'] = self.merge_dict(context['styles'],
+                                                    remote_styles['styles'])
+            except KeyError:
+                pass
 
         context['active'] = "styles"
         context['modal_playlists'] = Playlist.objects.all()
@@ -257,9 +278,19 @@ class SearchView(DjangoZikView):
         for remote_instance in remote_instances:
             api_client = ApiClient(remote_instance.url, remote_instance.key)
             search = api_client.search(keyword)
-            artists = self.merge_dict(artists, search['artists'])
-            songs = self.merge_dict(songs, search['songs'])
-            albums = self.merge_dict(albums, search['albums'])
+            try:
+                artists = self.merge_dict(artists, search['artists'])
+            except KeyError:
+                pass
+            try:
+                songs = self.merge_dict(songs, search['songs'])
+            except KeyError:
+                pass
+            try:
+                albums = self.merge_dict(albums, search['albums'])
+            except KeyError:
+                pass
+
 
         context['artists'] = artists
         context['albums'] = albums
