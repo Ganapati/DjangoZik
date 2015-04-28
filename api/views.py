@@ -7,8 +7,17 @@ from api.models import ApiKey
 from rest_framework_extensions.cache.decorators import cache_response
 
 
-class ArtistApiView(APIView):
-    @cache_response()
+class DjangoZikAPIView(APIView):
+    def calculate_cache_key(self, view_instance, view_method,
+                            request, args, kwargs):
+            return '.'.join([
+                '.'.join(request.GET),
+                request.path
+            ])
+
+
+class ArtistApiView(DjangoZikAPIView):
+    @cache_response(60 * 15, key_func='calculate_cache_key')
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -20,12 +29,14 @@ class ArtistApiView(APIView):
                     song__style__slug=style).values('name', 'slug', 'picture',
                                                     'text')
                 for artist in content['artists']:
-                    artist['picture'] = "%s%s" % ('#static#', artist['picture'])
+                    artist['picture'] = "%s%s" % ('#static#',
+                                                  artist['picture'])
             else:
                 content['artists'] = Artist.objects.all().values(
                     'name', 'slug', 'picture', 'text')
                 for artist in content['artists']:
-                    artist['picture'] = "%s%s" % ('#static#', artist['picture'])
+                    artist['picture'] = "%s%s" % ('#static#',
+                                                  artist['picture'])
             api_response.set_content(content)
         except:
             api_response.content = ''
@@ -33,8 +44,8 @@ class ArtistApiView(APIView):
         return Response(api_response.content, api_response.status)
 
 
-class SearchApiView(APIView):
-    @cache_response()
+class SearchApiView(DjangoZikAPIView):
+    @cache_response(60 * 15, key_func='calculate_cache_key')
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -77,8 +88,8 @@ class SearchApiView(APIView):
         return Response(api_response.content, api_response.status)
 
 
-class AlbumApiView(APIView):
-    @cache_response()
+class AlbumApiView(DjangoZikAPIView):
+    @cache_response(60 * 15, key_func='calculate_cache_key')
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -87,7 +98,9 @@ class AlbumApiView(APIView):
             artist = request.GET.get('artist', None)
             if artist is not None:
                 content['albums'] = Album.objects.filter(
-                    song__artist__slug=artist).values('name', 'slug', 'picture')
+                    song__artist__slug=artist).values('name',
+                                                      'slug',
+                                                      'picture')
                 for album in content['albums']:
                     album['picture'] = "%s%s" % ('#static#', album['picture'])
             else:
@@ -104,8 +117,8 @@ class AlbumApiView(APIView):
         return Response(api_response.content, api_response.status)
 
 
-class StyleApiView(APIView):
-    @cache_response()
+class StyleApiView(DjangoZikAPIView):
+    @cache_response(60 * 15, key_func='calculate_cache_key')
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()
@@ -120,8 +133,8 @@ class StyleApiView(APIView):
         return Response(api_response.content, api_response.status)
 
 
-class SongApiView(APIView):
-    @cache_response()
+class SongApiView(DjangoZikAPIView):
+    @cache_response(60 * 15, key_func='calculate_cache_key')
     def get(self, request):
         get_object_or_404(ApiKey, key=request.GET.get('key', None))
         api_response = ApiResponse()

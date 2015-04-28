@@ -57,6 +57,6 @@ class ApiClient(object):
                 json_data = json.loads(data)
                 return json_data
             else:
-                raise ValueError()
-        except ValueError:
+                raise Exception()
+        except:
             return {}

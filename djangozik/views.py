@@ -16,6 +16,7 @@ class DjangoZikView(TemplateView):
         for item in d2:
             if item['slug'] not in slug_list:
                 d1.append(item)
+                slug_list.append(item['slug'])
         return d1
 
 
