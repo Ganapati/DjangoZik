@@ -26,7 +26,10 @@ class HomeView(DjangoZikView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
-        context['songs'] = Song.objects.order_by('-id')[:10]
+        context['songs'] = Song.objects.order_by('-id')[:10].values(
+            'title', 'slug', 'filepath', 'album__slug', 'album__name',
+            'album__picture', 'artist__name', 'artist__slug', 'style__name',
+            'style__slug')
         context['active'] = "home"
         styles = Style.objects.values('name').annotate(Count('song')).order_by(
             '-song__count')
@@ -53,8 +56,9 @@ class SongsView(DjangoZikView):
             album = Album.objects.filter(slug=self.kwargs['key'])
             context['album'] = album
             songs = Song.objects.filter(album__in=album).values(
-                'title', 'slug', 'filepath', 'album__slug', 'album__name', 'album__picture',
-                'artist__name', 'artist__slug', 'style__name', 'style__slug')
+                'title', 'slug', 'filepath', 'album__slug', 'album__name',
+                'album__picture', 'artist__name', 'artist__slug',
+                'style__name', 'style__slug')
             for remote_instance in remote_instances:
                 api_client = ApiClient(remote_instance.url,
                                        remote_instance.key)
@@ -65,17 +69,18 @@ class SongsView(DjangoZikView):
             playlist = Playlist.objects.get(slug=self.kwargs['key'])
             context['playlist'] = playlist
             songs = Song.objects.filter(playlist=playlist).values(
-                'title', 'slug', 'filepath', 'album__slug', 'album__name', 'album__picture',
-                'artist__name', 'artist__slug', 'style__name', 'style__slug')
+                'title', 'slug', 'filepath', 'album__slug', 'album__name',
+                'album__picture', 'artist__name', 'artist__slug',
+                'style__name', 'style__slug')
 
         elif self.kwargs['type'] == 'artist':
             artist = Artist.objects.filter(slug=self.kwargs['key'])
             context['artist'] = artist
             songs = Song.objects.filter(artist=artist).order_by(
-                'album__name').values('title', 'slug', 'filepath',
-                                      'album__slug', 'album__name', 'album__picture',
-                                      'artist__name', 'artist__slug',
-                                      'style__name', 'style__slug')
+                'album__name').values(
+                    'title', 'slug', 'filepath', 'album__slug', 'album__name',
+                    'album__picture', 'artist__name', 'artist__slug',
+                    'style__name', 'style__slug')
 
             for remote_instance in remote_instances:
                 api_client = ApiClient(remote_instance.url,

@@ -5,15 +5,19 @@ from django.shortcuts import get_object_or_404
 from djangozik.models import Album, Artist, Song, Style
 from api.models import ApiKey
 from rest_framework_extensions.cache.decorators import cache_response
+import json
+from django.utils.text import slugify
 
 
 class DjangoZikAPIView(APIView):
     def calculate_cache_key(self, view_instance, view_method,
                             request, args, kwargs):
-        get_params = request.GET.copy()
+        get_params = request.query_params.copy()
         del get_params['key']
+        get_params = json.dumps(get_params)
+        get_params = slugify(u'%s' % get_params)
         return '.'.join([
-            '.'.join(request.GET),
+            get_params,
             request.path
         ])
 
