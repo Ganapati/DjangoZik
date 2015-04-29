@@ -15,7 +15,7 @@
       <tbody>
         {% for song in songs  %}
         <tr>
-            <td>
+            <td style="position: relative">
                 <img class="album_cover thumb_small" 
                 data-slug="{{ song.album__slug }}" src="
                 {% if not song.album__picture %}
@@ -28,6 +28,9 @@
                     {% endif %}
                 {% endif %}" 
                      data-picture="{% if song.album__picture %}yes{% else %}no{% endif %}" />
+                 {% if 'http' in song.album__picture %}
+                     <img class="remote_small" src="{% static "images/remote_icon.png" %}"/>
+                 {% endif %}
             </td>
             <td>
             {% if 'http' in song.filepath %}

@@ -6,6 +6,7 @@
     text-align: center;
     height: 150px;
     overflow: hidden;
+    position: relative;
 }
 
 .main ul.artist_list li img {
@@ -13,7 +14,7 @@
     margin: auto;
 }
 
-.main ul.album_list li img {
+.main ul.album_list li img:first-child {
     width: 80px;
     display: block;
     margin: auto;
@@ -26,4 +27,24 @@
 .thumb_small {
     width: 40px;
     height: 40px;
+}
+
+.remote_medium,
+.remote_small {
+    z-index: 1;
+     position: absolute;
+}
+
+.remote_small {
+    left: 9px;
+    bottom: 8px;
+}
+
+.remote_medium {
+    left: 37px;
+    bottom: 71px;
+}
+
+#jp_container_1 {
+    z-index: 2;
 }

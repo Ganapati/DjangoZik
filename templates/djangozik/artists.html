@@ -18,6 +18,9 @@
             {% endif %}" 
                          data-picture="{% if artist.picture != None %}yes{% else %}no{% endif %}" /> 
             {{ artist.name }}
+            {% if 'http' in artist.picture %}
+                <img class="remote_medium" src="{% static "images/remote_icon.png" %}"/>
+            {% endif %}
         </a>
     </li>
     {% endfor %}

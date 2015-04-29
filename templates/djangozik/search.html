@@ -19,6 +19,9 @@
                         {% endif %}
                     {% endif %}" 
                              data-picture="{% if artist.picture != None %}yes{% else %}no{% endif %}" />
+                {% if 'http' in artist.picture %}
+                    <img class="remote_medium" src="{% static "images/remote_icon.png" %}"/>
+                {% endif %}
                 {{ artist.name }}
             </a>
         </li>
@@ -53,6 +56,10 @@
                         {% endif %}
                     {% endif %}" 
                     data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
+                    {% if 'http' in album.picture %}
+                        <img class="remote_medium" src="{% static "images/remote_icon.png" %}"/>
+                    {% endif %}
+
                     {{ album.name }}
                 </a>
             </li>

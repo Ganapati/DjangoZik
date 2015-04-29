@@ -48,6 +48,9 @@
                         {% endif %}
                     {% endif %}" 
                     data-picture="{% if album.picture != None %}yes{% else %}no{% endif %}" />
+                    {% if 'http' in album.picture %}
+                        <img class="remote_medium" src="{% static "images/remote_icon.png" %}"/>
+                    {% endif %}
                     {{ album.name }}
                 </a>
             </li>
