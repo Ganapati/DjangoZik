@@ -265,7 +265,9 @@ class SearchView(DjangoZikView):
 
         try:
             songs = Song.objects.filter(title__icontains=keyword).values(
-                'title', 'filepath', 'slug')
+                'title', 'filepath', 'slug', 'album__name', 'album__slug',
+                'artist__slug', 'artist__name', 'style__name', 'style__name',
+                'album__picture')
         except Song.DoesNotExist:
             songs = []
 
