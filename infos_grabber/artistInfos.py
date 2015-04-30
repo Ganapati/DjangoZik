@@ -26,7 +26,7 @@ class ArtistInfos:
             'secret': settings.DISCOGS_SECRET
         }
         headers = {'User-Agent': 'DjangoZik - opensource web player - dev'}
-        infos = requests.get(self.url, params=params, headers=headers)
+        infos = requests.get(self.url, params=params, headers=headers, verify=False)
         if infos.status_code == 200:
             try:
                 data['success'] = True
