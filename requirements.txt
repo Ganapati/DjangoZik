@@ -2,6 +2,7 @@ lxml
 django>=1.5.4
 mutagen
 requests
+grequests
 beautifulsoup4
 djangorestframework
 bbcode
