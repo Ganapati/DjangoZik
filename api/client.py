@@ -1,5 +1,4 @@
 import grequests
-from requests import Response
 import json
 
 
@@ -65,11 +64,12 @@ class ApiClient(object):
             json_data = {}
             for response in responses:
                 try:
-                    json_data.update(json.loads(response.text))
-                except:
+                    json_data = self.merge_dict(json_data,
+                                                json.loads(response.text))
+                except NotImplementedError:
                     pass
             return json_data
-        except:
+        except NotImplementedError:
             return {}
 
     def hook_factory(self, *factory_args, **factory_kwargs):
@@ -83,3 +83,16 @@ class ApiClient(object):
                 return response
             return ''
         return response_hook
+
+    def merge_dict(self, d1, d2):
+        if not d1:
+            return d2
+        if not d2:
+            return d1
+        d1 = [entry for entry in d1]
+        slug_list = [i['slug'] for i in d1]
+        for item in d2:
+            if item['slug'] not in slug_list:
+                d1.append(item)
+                slug_list.append(item['slug'])
+        return d1
